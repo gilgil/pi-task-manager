@@ -1,0 +1,12 @@
+{
+  "name": "pi-task-manager",
+  "version": "0.1.0",
+  "description": "Task/todo management extension for pi",
+  "type": "module",
+  "pi": {
+    "extensions": ["./extension/index.ts"]
+  },
+  "dependencies": {
+    "typebox": "^0.34.0"
+  }
+}
