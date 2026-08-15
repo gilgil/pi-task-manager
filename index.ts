@@ -64,9 +64,11 @@ export default function (pi: ExtensionAPI) {
 		const todoPath = join(ctx.cwd, "TODO.md");
 		if (!existsSync(todoPath)) return;
 		const result = manager.openFile(ctx.cwd);
-		if (result.status === "ok" && ctx.hasUI) {
+		if (!ctx.hasUI) return;
+		if (result.status === "ok")
 			ctx.ui.notify(`Tasks: opened ${todoPath} (${result.task_count} tasks)`, "info");
-		}
+		else
+			ctx.ui.notify(`Tasks: failed to open ${todoPath}: ${result.error}`, "warning");
 	});
 
 	for (const tool of TOOLS) {

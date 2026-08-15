@@ -19,6 +19,7 @@ import {
 	BASE62_CHARS,
 	PRIORITY_EMOJI,
 	STATUS_CHARS,
+	findAnnotationEmoji,
 	parseTodoFile,
 	tasksToMarkdown,
 } from "./parser.ts";
@@ -127,9 +128,9 @@ export class TaskManager {
 		}
 	}
 
-	/** Atomic save: temp file + backup + rename. Errors silently ignored. */
-	private saveToDisk(): void {
-		if (!this.path) return;
+	/** Atomic save: temp file + backup + rename. Returns error message on failure. */
+	private saveToDisk(): string | null {
+		if (!this.path) return null;
 		try {
 			const content = tasksToMarkdown(this.roots);
 			const dir = path.dirname(this.path);
@@ -143,15 +144,17 @@ export class TaskManager {
 			}
 			fs.renameSync(tmp, this.path);
 			this.dirty = false;
-		} catch {
-			// silently ignore; next call will retry
+			return null;
+		} catch (e) {
+			return (e as Error).message;
 		}
 	}
 
-	private commit(): void {
+	/** Mutate state, then save. Returns save error message, or null. */
+	private commit(): string | null {
 		this.rebuildMap();
 		this.dirty = true;
-		this.saveToDisk();
+		return this.saveToDisk();
 	}
 
 	private taskToDict(task: Task): Record<string, unknown> {
@@ -252,17 +255,23 @@ export class TaskManager {
 		const workspace = path.resolve(workspacePath);
 		const todoPath = path.join(workspace, TODO_FILENAME);
 
-		this.path = todoPath;
-		this.roots = [];
-		this.taskMap = new Map();
-
-		if (fs.existsSync(todoPath)) {
-			const content = fs.readFileSync(todoPath, "utf-8");
-			this.roots = parseTodoFile(content);
-		} else {
-			fs.writeFileSync(todoPath, "# TODO\n\n", "utf-8");
+		let content: string;
+		try {
+			if (fs.existsSync(todoPath)) {
+				content = fs.readFileSync(todoPath, "utf-8");
+			} else {
+				fs.writeFileSync(todoPath, "# TODO\n\n", "utf-8");
+				content = "# TODO\n\n";
+			}
+		} catch (e) {
+			return {
+				status: "error",
+				error: `Cannot open ${todoPath}: ${(e as Error).message}`,
+			};
 		}
 
+		this.path = todoPath;
+		this.roots = parseTodoFile(content);
 		this.rebuildMap();
 		this.dirty = false;
 
@@ -271,7 +280,14 @@ export class TaskManager {
 
 	closeFile(): Result {
 		if (!this.isOpen) return { status: "error", error: "No file open" };
-		if (this.dirty) this.save();
+		if (this.dirty) {
+			const err = this.saveToDisk();
+			if (err)
+				return {
+					status: "error",
+					error: `Close failed, file left open (save error): ${err}`,
+				};
+			}
 		this.path = null;
 		this.roots = [];
 		this.taskMap = new Map();
@@ -304,6 +320,13 @@ export class TaskManager {
 			return {
 				status: "error",
 				error: "Description cannot contain newlines.",
+			};
+
+		const badEmoji = findAnnotationEmoji(desc);
+		if (badEmoji)
+			return {
+				status: "error",
+				error: `Description contains annotation emoji ${badEmoji}, which is reserved for task metadata.`,
 			};
 
 		for (const [label, value] of [
@@ -379,9 +402,14 @@ export class TaskManager {
 			}
 		}
 
-		this.commit();
-
-		return { status: "ok", task_id: task.id, description: task.description };
+		const saveError = this.commit();
+		const result: Result = {
+			status: "ok",
+			task_id: task.id,
+			description: task.description,
+		};
+		if (saveError) result.warning = `Task added but save failed: ${saveError}`;
+		return result;
 	}
 
 	editTask(
@@ -425,6 +453,12 @@ export class TaskManager {
 				return { status: "error", error: "Description cannot be empty." };
 			if (d.includes("\n") || d.includes("\r"))
 				return { status: "error", error: "Description cannot contain newlines." };
+			const badEmoji = findAnnotationEmoji(d.trim());
+			if (badEmoji)
+				return {
+					status: "error",
+					error: `Description contains annotation emoji ${badEmoji}, which is reserved for task metadata.`,
+				};
 			task.description = d.trim();
 		}
 
@@ -492,9 +526,11 @@ export class TaskManager {
 		}
 
 		task.dateModified = this.today();
-		this.commit();
-
-		return { status: "ok", task: this.taskToDict(task) };
+		const saveError = this.commit();
+		const result: Result = { status: "ok", task: this.taskToDict(task) };
+		if (saveError)
+			result.warning = `Task updated but save failed: ${saveError}`;
+		return result;
 	}
 
 	/** Move a task (with its subtree). No destination = delete. */
@@ -564,15 +600,16 @@ export class TaskManager {
 			task,
 		);
 
-		this.commit();
-
-		return {
+		const saveError = this.commit();
+		const result: Result = {
 			status: "ok",
 			message: `Task ${taskId} moved.`,
 			task_id: taskId,
 			parent_id: task.parent?.id ?? null,
 			depth: depthOf(task),
 		};
+		if (saveError) result.warning = `Task moved but save failed: ${saveError}`;
+		return result;
 	}
 
 	getTask(taskId: string): Result {
@@ -618,7 +655,8 @@ export class TaskManager {
 	save(): Result {
 		if (!this.isOpen || !this.path)
 			return { status: "error", error: "No file open." };
-		if (this.dirty) this.saveToDisk();
+		const err = this.saveToDisk();
+		if (err) return { status: "error", error: `Save failed: ${err}` };
 		return {
 			status: "ok",
 			message: `Saved to ${this.path}`,
@@ -640,11 +678,12 @@ export class TaskManager {
 		const siblings = task.parent ? task.parent.children : this.roots;
 		siblings.splice(siblings.indexOf(task), 1);
 
-		this.commit();
-
-		return {
+		const saveError = this.commit();
+		const result: Result = {
 			status: "ok",
 			message: `Deleted task ${taskId} and ${subCount} sub-task(s).`,
 		};
+		if (saveError) result.warning = `Task deleted but save failed: ${saveError}`;
+		return result;
 	}
 }

@@ -56,6 +56,27 @@ export const DATE_FROM_EMOJI: Record<string, DateKey> = Object.fromEntries(
 /** Status characters: ' '=open, 'x'=done, '>'=in-progress, '!'=failed, '-'=cancelled */
 export const STATUS_CHARS = [" ", "x", ">", "!", "-"];
 
+/**
+ * All emojis the parser treats as annotations. Descriptions must not
+ * contain them, or they get stripped/misparsed on reload.
+ */
+export const ANNOTATION_EMOJIS: string[] = [
+	...Object.values(PRIORITY_EMOJI),
+	...Object.values(DATE_EMOJI),
+	"🔁",
+	"🗑️",
+	"🏁",
+	"⛔",
+	"📎",
+	"🆔",
+];
+
+/** Returns the first annotation emoji found in text, or null. */
+export function findAnnotationEmoji(text: string): string | null {
+	for (const e of ANNOTATION_EMOJIS) if (text.includes(e)) return e;
+	return null;
+}
+
 const TASK_LINE_RE = /^( *)-\s+\[([ x>!-])\]\s+(.*?)\s*$/;
 const ID_RE = /\(ID:\s*`([A-Za-z0-9]{6})`\)\s*$/;
 const SPEC_RE = /📎\s*\[spec\]\(task-[A-Za-z0-9]+\.md\)\s*/;

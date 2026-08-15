@@ -27,6 +27,8 @@ Example: add "Organic" under task `5Tvc0d`:
 
 ## Fields
 
+- Descriptions must be single-line and must not contain the annotation
+  emojis (⏬🔽🔼⏫🔺⏳🛫📅✅❌➕🖊️🔁🗑️🏁⛔📎🆔) — they are reserved for metadata.
 - `priority`: `lowest` `low` `normal` `medium` `high` `highest`
 - `status`: ` ` open · `x` done · `>` in-progress · `!` failed · `-` cancelled
   (setting `x` / `-` stamps `date_done` / `date_cancelled`)
