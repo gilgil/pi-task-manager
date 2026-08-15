@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-08-15T09:55:59.759Z",
+  "last_updated": "2026-08-15T10:10:40.882Z",
   "pages": {
     "concepts/dataclass-porting": {
       "type": "concept",
@@ -221,6 +221,22 @@
       "relevance": "high",
       "observed_at": "2026-08-15T03:31:02.276Z",
       "source_context": "Refactoring pi-task-manager from flat list to tree per user direction",
+      "created": "2026-08-15",
+      "updated": "2026-08-15"
+    },
+    "sources/obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi": {
+      "type": "source",
+      "title": "Observation: pi-task-manager installed and verified in real pi",
+      "tags": [
+        "pi-task-manager",
+        "install",
+        "done"
+      ],
+      "status": "observation",
+      "slug": "obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi",
+      "relevance": "high",
+      "observed_at": "2026-08-15T10:10:40.846Z",
+      "source_context": "Finishing pi-task-manager: commit, docs, install, verify",
       "created": "2026-08-15",
       "updated": "2026-08-15"
     },

@@ -2,6 +2,7 @@
 
 ## 2026-08-15
 
+- **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi","title":"pi-task-manager installed and verified in real pi"}
 - **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree","title":"pi-task-manager: flat list refactored to true tree"}
 
 ## 2026-08-14

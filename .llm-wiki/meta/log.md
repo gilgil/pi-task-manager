@@ -74,3 +74,6 @@
 ## [2026-08-15T03:31:02.281Z] observe
 - slug: "obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree", title: "pi-task-manager: flat list refactored to true tree", relevance: "high"
 
+## [2026-08-15T10:10:40.858Z] observe
+- slug: "obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi", title: "pi-task-manager installed and verified in real pi", relevance: "high"
+

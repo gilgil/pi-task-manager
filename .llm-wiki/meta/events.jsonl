@@ -22,3 +22,4 @@
 {"orphans":8,"missing_pages":0,"contradictions":0,"auto_fix":true,"legacy_pages_repaired":0,"timestamp":"2026-08-14T16:03:31.022Z","kind":"lint"}
 {"slug":"wiki-initialization-complete","title":"pi-task-manager wiki initialized and populated","category":"wiki","timestamp":"2026-08-14T16:05:18.620Z","kind":"retro"}
 {"slug":"obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree","title":"pi-task-manager: flat list refactored to true tree","relevance":"high","timestamp":"2026-08-15T03:31:02.281Z","kind":"observe"}
+{"slug":"obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi","title":"pi-task-manager installed and verified in real pi","relevance":"high","timestamp":"2026-08-15T10:10:40.858Z","kind":"observe"}
