@@ -2,32 +2,26 @@
 
 ## inbox
 
-- [ ] Port `_parse_task_line` → TypeScript parser function (`parser.ts`)
-- [ ] Port `TaskManager` class → TypeScript (`task-manager.ts`)
-- [ ] Write basic tests for parser
-- [ ] Create `extension/index.ts` with tool registrations
-- [ ] Wire tool execute handlers to TaskManager methods
-- [ ] Test extension in pi (load via `pi -e`)
-- [ ] Add `resources_discover` handler for skill auto-discovery
-- [ ] Write `README.md`
-- [ ] Test full workflow end-to-end
-- [ ] Add custom TUI rendering (status bar showing task counts)
-- [ ] Add `/tasks` command for quick status
-- [ ] Add `session_start` hook to auto-open TODO.md if present in cwd
-
-## today
-
-- [ ] Create project structure with `package.json`
-- [ ] Port `Task` dataclass → TypeScript interface
-- [ ] Define TypeBox schemas for each tool
+- [ ] Use the extension in real sessions (installed via `pi install`)
+- [ ] Add `session_start` hook: auto-open TODO.md if present in cwd
 
 ## someday
 
-- [ ] (none yet)
+- [ ] Add `/tasks` command for quick status
+- [ ] Add custom TUI rendering (status bar showing task counts)
 
 ## done
 
 - [x] Create project structure with `package.json`
-- [x] Port `Task` dataclass → TypeScript interface
-- [x] Define TypeBox schemas for each tool
-- [x] Create `skills/task-manager/SKILL.md` with usage instructions
+- [x] Port `Task` dataclass → TypeScript tree node (`task.ts`)
+- [x] Define TypeBox schemas for each tool (`tools.ts`)
+- [x] Port `_parse_task_line` → TypeScript parser (`parser.ts`)
+- [x] Port `TaskManager` class → TypeScript (`task-manager.ts`)
+- [x] Write tests for parser and task manager (20 tests, `node --test`)
+- [x] Create `extension/index.ts` with tool registrations
+- [x] Wire tool execute handlers to TaskManager methods
+- [x] Test extension in pi (load via `pi -e`)
+- [x] Write `README.md`
+- [x] Rewrite `SKILL.md` for the tree API
+- [x] Test full workflow end-to-end
+- [x] Fix `typebox` dependency (`^1.3.7`)

@@ -1,34 +1,43 @@
 # Task Manager
 
-Manage tasks in TODO.md files using the `task_*` tools.
+Manage tasks in a `TODO.md` tree using the `task_*` tools.
 
 ## Workflow
 
-1. **Open** a TODO.md file: `task_open(path)`
-2. **List** tasks: `task_list()` or `task_list(category: "inbox")`
-3. **Add** tasks: `task_add(text, category?, priority?)`
-4. **Edit** tasks: `task_edit(id, changes...)`
-5. **Move** tasks between categories: `task_move(id, category)`
-6. **Get** task details: `task_get(id)`
-7. **Save** when done: `task_save()`
-8. **Close** when finished: `task_close()`
+1. `task_open(path)` — open `<path>/TODO.md` (created if missing). Call once before anything else.
+2. `task_list()` — see what exists.
+3. `task_add(description, ...)` — add tasks. Returns the new 6-char ID.
+4. `task_edit(task_id, ...)` — change fields (only provided fields).
+5. `task_move(task_id, ...)` — reposition a task (with its subtree).
+6. `task_save()` / `task_close()` — save and close when done.
 
-## Categories
+Mutations auto-save; `task_save` is a manual force-save.
 
-- `inbox` — unsorted new tasks
-- `today` — tasks to do today
-- `someday` — tasks for later
-- `done` — completed tasks
+## Hierarchy
 
-## Priorities
+Tasks form a tree via indentation. Placement parameters:
 
-- `high` — urgent
-- `medium` — normal
-- `low` — nice to have
+- `parent_id` — add/move as **last child** of that task
+- `before_id` / `after_id` — insert at the **same level**, before/after that
+  sibling (it must share the target's parent)
+- `task_move` with **no** destination deletes the task and its subtree
+
+Example: add "Organic" under task `5Tvc0d`:
+`task_add("Organic", parent_id: "5Tvc0d")`
+
+## Fields
+
+- `priority`: `lowest` `low` `normal` `medium` `high` `highest`
+- `status`: ` ` open · `x` done · `>` in-progress · `!` failed · `-` cancelled
+  (setting `x` / `-` stamps `date_done` / `date_cancelled`)
+- dates `scheduled` / `start` / `due`: `YYYY-MM-DD`
+- `recurrence`: e.g. `weekly`, `every 2 weeks on Monday`
+- `depends_on`: list of task IDs (circular dependencies are rejected)
+- `spec: true` on add — also create a `task-<id>.md` spec file
 
 ## Tips
 
-- Always `task_open` before other actions
-- Always `task_save` before `task_close`
-- Use `task_list` with filters to find tasks quickly
-- Use `task_move` to organize tasks into categories
+- Always `task_open` first; `task_list` before adding to find `parent_id`s.
+- Use `task_list(parent_id, include_subtasks: true)` to inspect a subtree.
+- `task_get(task_id)` for full details of one task.
+- IDs are stable 6-char strings — reuse them across calls in a session.
