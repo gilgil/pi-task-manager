@@ -5,8 +5,8 @@ import {
 	parseTodoFile,
 	buildTaskLine,
 	tasksToMarkdown,
-} from "../extension/lib/parser.ts";
-import { depthOf, type Task } from "../extension/lib/task.ts";
+} from "../lib/parser.ts";
+import { depthOf, type Task } from "../lib/task.ts";
 
 /** Flatten a tree to DFS order (for assertions). */
 function flatten(roots: Task[]): Task[] {

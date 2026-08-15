@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { TaskManager } from "../extension/lib/task-manager.ts";
+import { TaskManager } from "../lib/task-manager.ts";
 
 function setup() {
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-test-"));

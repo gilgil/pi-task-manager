@@ -4,7 +4,7 @@
   "description": "Task/todo management extension for pi",
   "type": "module",
   "pi": {
-    "extensions": ["./extension/index.ts"]
+    "extensions": ["./index.ts"]
   },
   "dependencies": {
     "typebox": "^1.3.7"

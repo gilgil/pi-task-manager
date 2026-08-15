@@ -72,6 +72,6 @@ npm install
 node --test tests/parser.test.ts tests/task-manager.test.ts
 ```
 
-Layout: `extension/index.ts` (tool registration) · `extension/lib/`
+Layout: `index.ts` (tool registration) · `lib/`
 (`task.ts` tree node, `parser.ts` line ⇄ tree, `task-manager.ts` mutations,
 `tools.ts` TypeBox schemas) · `skills/task-manager/SKILL.md` (LLM usage guide).
