@@ -1,0 +1,107 @@
+{
+  "concepts/dataclass-porting": [
+    "sources/SRC-2026-08-14-005"
+  ],
+  "concepts/date-fields": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "concepts/emoji-annotations": [
+    "concepts/todomd-format",
+    "entities/parser",
+    "entities/task-data-model",
+    "sources/wiki-initialization-complete"
+  ],
+  "concepts/on-completion": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "concepts/priority-levels": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "concepts/python-to-typescript-port": [
+    "sources/wiki-initialization-complete"
+  ],
+  "concepts/recurrence": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "concepts/task-dependencies": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "concepts/task-hierarchy": [
+    "sources/wiki-initialization-complete"
+  ],
+  "concepts/task-metadata": [
+    "sources/SRC-2026-08-14-005"
+  ],
+  "concepts/tasks-emoji-format": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "concepts/todomd-format": [
+    "concepts/emoji-annotations",
+    "concepts/task-hierarchy",
+    "entities/id-generation",
+    "entities/parser",
+    "entities/task-data-model",
+    "entities/taskmanager-class",
+    "sources/wiki-initialization-complete"
+  ],
+  "entities/id-generation": [
+    "sources/wiki-initialization-complete"
+  ],
+  "entities/parser": [
+    "concepts/emoji-annotations",
+    "concepts/python-to-typescript-port",
+    "concepts/todomd-format",
+    "entities/taskmanager-class",
+    "sources/wiki-initialization-complete"
+  ],
+  "entities/task": [
+    "sources/SRC-2026-08-14-005"
+  ],
+  "entities/task-data-model": [
+    "concepts/task-hierarchy",
+    "concepts/todomd-format",
+    "entities/id-generation",
+    "entities/parser",
+    "entities/taskmanager-class",
+    "sources/wiki-initialization-complete"
+  ],
+  "entities/taskmanager-class": [
+    "concepts/python-to-typescript-port",
+    "concepts/task-hierarchy",
+    "entities/task-data-model",
+    "entities/tool-definitions",
+    "sources/wiki-initialization-complete"
+  ],
+  "entities/tasks-plugin": [
+    "sources/SRC-2026-08-14-003"
+  ],
+  "entities/tool-definitions": [
+    "concepts/python-to-typescript-port",
+    "entities/taskmanager-class",
+    "sources/wiki-initialization-complete"
+  ],
+  "sources/SRC-2026-08-14-001": [],
+  "sources/SRC-2026-08-14-002": [
+    "concepts/emoji-annotations"
+  ],
+  "sources/SRC-2026-08-14-003": [
+    "concepts/date-fields",
+    "concepts/on-completion",
+    "concepts/priority-levels",
+    "concepts/recurrence",
+    "concepts/task-dependencies",
+    "concepts/tasks-emoji-format",
+    "entities/tasks-plugin"
+  ],
+  "sources/SRC-2026-08-14-004": [],
+  "sources/SRC-2026-08-14-005": [
+    "concepts/dataclass-porting",
+    "concepts/task-metadata",
+    "entities/task"
+  ],
+  "sources/SRC-2026-08-14-006": [],
+  "sources/SRC-2026-08-14-007": [],
+  "sources/obs-2026-08-14-wiki-initialized-for-pi-task-manager-project": [],
+  "sources/obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree": [],
+  "sources/wiki-initialization-complete": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "SRC-2026-08-14-002",
+  "captured": "2026-08-14",
+  "packet_version": "1.0",
+  "title": "task_manager_design.md",
+  "file_path": "/home/gil/agent/tools/task_manager_design.md",
+  "format": "markdown",
+  "extractor": "passthrough",
+  "extraction_status": "success",
+  "content_type": "text/markdown"
+}

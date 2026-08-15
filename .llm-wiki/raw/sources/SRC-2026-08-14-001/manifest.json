@@ -1,0 +1,10 @@
+{
+  "id": "SRC-2026-08-14-001",
+  "captured": "2026-08-14",
+  "packet_version": "1.0",
+  "title": "task_manager.py",
+  "file_path": "/home/gil/agent/tools/task_manager.py",
+  "format": "file",
+  "extractor": "passthrough",
+  "extraction_status": "success"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "SRC-2026-08-14-007",
+  "captured": "2026-08-14",
+  "packet_version": "1.0",
+  "title": "tools.ts",
+  "file_path": "/home/gil/projects/pi-task-manager/extension/lib/tools.ts",
+  "format": "file",
+  "extractor": "passthrough",
+  "extraction_status": "success"
+}
