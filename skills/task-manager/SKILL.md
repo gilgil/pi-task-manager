@@ -1,3 +1,8 @@
+---
+name: task-manager
+description: Manage tasks in a TODO.md tree using the task_* tools (task_open, task_add, task_edit, task_move, task_list, task_get, task_save, task_close). Use when tracking TODOs or tasks in a pi session.
+---
+
 # Task Manager
 
 Manage tasks in a `TODO.md` tree using the `task_*` tools.
