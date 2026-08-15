@@ -55,6 +55,36 @@ test("addTask: accepts description with non-annotation emoji (round-trips)", () 
 	assert.equal(t.task.description, "Fix the 🐛 bug");
 });
 
+// ── status revert (hjKhGg) ───────────────────────────────────────────────────
+
+test("editTask: reverting status from x clears date_done", () => {
+	const { tm } = setup();
+	const a = id(tm.addTask("A"));
+	tm.editTask(a, undefined, "x");
+	assert.ok((tm.getTask(a) as any).task.date_done, "date_done stamped on x");
+	tm.editTask(a, undefined, " ");
+	assert.equal((tm.getTask(a) as any).task.date_done, null);
+});
+
+test("editTask: reverting status from - clears date_cancelled", () => {
+	const { tm } = setup();
+	const a = id(tm.addTask("A"));
+	tm.editTask(a, undefined, "-");
+	assert.ok((tm.getTask(a) as any).task.date_cancelled, "date_cancelled stamped on -");
+	tm.editTask(a, undefined, " ");
+	assert.equal((tm.getTask(a) as any).task.date_cancelled, null);
+});
+
+test("editTask: x to - clears date_done and stamps date_cancelled", () => {
+	const { tm } = setup();
+	const a = id(tm.addTask("A"));
+	tm.editTask(a, undefined, "x");
+	tm.editTask(a, undefined, "-");
+	const t = (tm.getTask(a) as any).task;
+	assert.equal(t.date_done, null);
+	assert.ok(t.date_cancelled);
+});
+
 // ── openFile error handling (3Dqwgr) ──────────────────────────────────
 
 test("openFile: bad path returns error Result instead of throwing", () => {

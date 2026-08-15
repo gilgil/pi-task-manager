@@ -471,8 +471,10 @@ export class TaskManager {
 				};
 			task.status = newStatus;
 			if (newStatus === "x" && !task.dateDone) task.dateDone = this.today();
+			else if (newStatus !== "x") task.dateDone = null;
 			if (newStatus === "-" && !task.dateCancelled)
 				task.dateCancelled = this.today();
+			else if (newStatus !== "-") task.dateCancelled = null;
 		}
 
 		if ("priority" in changes) {

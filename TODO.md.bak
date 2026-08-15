@@ -20,7 +20,7 @@
     - [x] openFile throws uncaught ENOENT/ENOTDIR on bad path — return error Result instead (verified) ⏫ ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `3Dqwgr`)
     - [x] saveToDisk silently swallows all errors — surface save failures to the user (disk full etc.) ⏫ ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `gtoVfN`)
     - [ ] task_list: priority "null" matches nothing; unknown parent_id returns empty ok instead of error (inconsistent with other tools) 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `2C8uzi`)
-    - [ ] session_start hook: wrap openFile in try/catch — an uncaught throw could break session startup 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `Kb3lE5`)
+    - [x] session_start hook: wrap openFile in try/catch — an uncaught throw could break session startup 🔼 ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `Kb3lE5`)
     - [ ] Spec file task-<id>.md orphaned when task deleted (verified) — clean up on delete 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `OTJ5fI`)
     - [ ] moveTask with only before_id/after_id requires ref to be top-level — clarify tool description or support same-level move under a different parent 🔽 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `hgj5k4`)
     - [ ] Two pi sessions on same TODO.md → last write wins, no lock — investigate mtime check or file lock 🔽 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `jxpt3g`)

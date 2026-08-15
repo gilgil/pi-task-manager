@@ -2,6 +2,7 @@
 
 ## 2026-08-15
 
+- **observe**: {"relevance":"high","slug":"obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped","title":"Annotation emoji reserved: descriptions rejected, not escaped"}
 - **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t","title":"pi-task-manager: input validation added to addTask/editTask (TDD)"}
 - **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate","title":"pi-task-manager code review: 19 tasks added under \"Investigate & Fix\""}
 - **observe**: {"relevance":"medium","slug":"obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s","title":"pi tool execute: sync return works at runtime but fails tsc strict"}

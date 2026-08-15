@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-08-15T18:05:17.129Z",
+  "last_updated": "2026-08-15T18:56:53.001Z",
   "pages": {
     "concepts/dataclass-porting": {
       "type": "concept",
@@ -206,6 +206,23 @@
       "source_context": "Initializing wiki for pi-task-manager project based on PLAN.md, TODO.md, and reference docs",
       "created": "2026-08-14",
       "updated": "2026-08-14"
+    },
+    "sources/obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped": {
+      "type": "source",
+      "title": "Observation: Annotation emoji reserved: descriptions rejected, not escaped",
+      "tags": [
+        "pi-task-manager",
+        "parser",
+        "validation",
+        "design"
+      ],
+      "status": "observation",
+      "slug": "obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped",
+      "relevance": "high",
+      "observed_at": "2026-08-15T18:56:52.961Z",
+      "source_context": "Fixing code-review bugs in pi-task-manager (round-trip data loss + API robustness)",
+      "created": "2026-08-15",
+      "updated": "2026-08-15"
     },
     "sources/obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate": {
       "type": "source",

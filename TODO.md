@@ -12,7 +12,7 @@
     - [x] Annotation emoji inside description (e.g. "Fix  icon") gets stripped and misparsed on reload — decide escaping strategy or document limitation (verified: desc corrupted, priority silently set) 🔺 ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `CdqV8G`)
     - [x] Invalid date strings (e.g. "tomorrow") accepted by task_edit, silently dropped on reload — validate YYYY-MM-DD in add/edit (verified) ⏫ ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `LxW3x6`)
     - [x] Invalid priority on task_add (e.g. "urgent") stored but silently dropped on reload — validate like task_edit does (verified) ⏫ ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `OUggp6`)
-    - [ ] date_done/date_cancelled not cleared when status reverted from x/- (verified: ✅ stays on reopened task) 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `hjKhGg`)
+    - [x] date_done/date_cancelled not cleared when status reverted from x/- (verified: ✅ stays on reopened task) 🔼 ✅ 2026-08-15 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `hjKhGg`)
     - [ ] Orphaned indented lines (manual edit) silently re-parented to root — validate on open or attach to nearest ancestor (verified) 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `CZuCTj`)
     - [ ] Tab indentation treated as depth 0 (verified) — normalize or reject tabs 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `4AmvH0`)
     - [ ] Duplicate task IDs in file silently resolve to last occurrence — validate on open (verified) 🔼 ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `4tN7g6`)

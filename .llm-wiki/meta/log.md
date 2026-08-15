@@ -95,3 +95,6 @@
 ## [2026-08-15T18:05:17.075Z] observe
 - slug: "obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t", title: "pi-task-manager: input validation added to addTask/editTask (TDD)", relevance: "high"
 
+## [2026-08-15T18:56:52.975Z] observe
+- slug: "obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped", title: "Annotation emoji reserved: descriptions rejected, not escaped", relevance: "high"
+
