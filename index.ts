@@ -6,6 +6,8 @@
  * that manages one TODO.md file per session.
  */
 
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { TaskManager } from "./lib/task-manager.ts";
 import { TOOLS } from "./lib/tools.ts";
@@ -58,6 +60,15 @@ function format(result: Result): string {
 }
 
 export default function (pi: ExtensionAPI) {
+	pi.on("session_start", (_event, ctx) => {
+		const todoPath = join(ctx.cwd, "TODO.md");
+		if (!existsSync(todoPath)) return;
+		const result = manager.openFile(ctx.cwd);
+		if (result.status === "ok" && ctx.hasUI) {
+			ctx.ui.notify(`Tasks: opened ${todoPath} (${result.task_count} tasks)`, "info");
+		}
+	});
+
 	for (const tool of TOOLS) {
 		pi.registerTool({
 			name: tool.name,

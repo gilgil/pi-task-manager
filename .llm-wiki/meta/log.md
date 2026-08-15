@@ -77,3 +77,21 @@
 ## [2026-08-15T10:10:40.858Z] observe
 - slug: "obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi", title: "pi-task-manager installed and verified in real pi", relevance: "high"
 
+## [2026-08-15T12:05:17.874Z] observe
+- slug: "obs-2026-08-15-pi-task-manager-todo-md-ported-from-flat-to-tree-format", title: "pi-task-manager TODO.md ported from flat to tree format", relevance: "medium"
+
+## [2026-08-15T12:54:05.859Z] observe
+- slug: "obs-2026-08-15-pi-tui-labels-local-path-extensions-by-shortest-unique-path-", title: "pi TUI labels local-path extensions by shortest unique path suffix", relevance: "high"
+
+## [2026-08-15T14:37:40.989Z] observe
+- slug: "obs-2026-08-15-session-start-hook-added-to-pi-task-manager", title: "session_start hook added to pi-task-manager", relevance: "high"
+
+## [2026-08-15T14:37:40.991Z] observe
+- slug: "obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s", title: "pi tool execute: sync return works at runtime but fails tsc strict", relevance: "medium"
+
+## [2026-08-15T17:07:36.663Z] observe
+- slug: "obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate", title: "pi-task-manager code review: 19 tasks added under \"Investigate & Fix\"", relevance: "high"
+
+## [2026-08-15T18:05:17.075Z] observe
+- slug: "obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t", title: "pi-task-manager: input validation added to addTask/editTask (TDD)", relevance: "high"
+

@@ -12,6 +12,8 @@ pi install /path/to/pi-task-manager   # or: pi install npm:@you/pi-task-manager
 ```
 
 The extension registers the tools and the `task-manager` skill automatically.
+If a `TODO.md` exists in the working directory, it is opened automatically at
+session start (with a notification).
 
 ## Task file format
 

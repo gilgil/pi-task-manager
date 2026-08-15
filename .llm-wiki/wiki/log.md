@@ -2,6 +2,12 @@
 
 ## 2026-08-15
 
+- **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t","title":"pi-task-manager: input validation added to addTask/editTask (TDD)"}
+- **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate","title":"pi-task-manager code review: 19 tasks added under \"Investigate & Fix\""}
+- **observe**: {"relevance":"medium","slug":"obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s","title":"pi tool execute: sync return works at runtime but fails tsc strict"}
+- **observe**: {"relevance":"high","slug":"obs-2026-08-15-session-start-hook-added-to-pi-task-manager","title":"session_start hook added to pi-task-manager"}
+- **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-tui-labels-local-path-extensions-by-shortest-unique-path-","title":"pi TUI labels local-path extensions by shortest unique path suffix"}
+- **observe**: {"relevance":"medium","slug":"obs-2026-08-15-pi-task-manager-todo-md-ported-from-flat-to-tree-format","title":"pi-task-manager TODO.md ported from flat to tree format"}
 - **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi","title":"pi-task-manager installed and verified in real pi"}
 - **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree","title":"pi-task-manager: flat list refactored to true tree"}
 

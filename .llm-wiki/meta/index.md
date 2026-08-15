@@ -30,8 +30,14 @@
 ## Sources
 
 - [[sources/obs-2026-08-14-wiki-initialized-for-pi-task-manager-project]] — Observation: Wiki initialized for pi-task-manager project *(created: 2026-08-14)*
+- [[sources/obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate]] — Observation: pi-task-manager code review: 19 tasks added under "Investigate & Fix" *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree]] — Observation: pi-task-manager: flat list refactored to true tree *(created: 2026-08-15)*
+- [[sources/obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t]] — Observation: pi-task-manager: input validation added to addTask/editTask (TDD) *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-pi-task-manager-installed-and-verified-in-real-pi]] — Observation: pi-task-manager installed and verified in real pi *(created: 2026-08-15)*
+- [[sources/obs-2026-08-15-pi-task-manager-todo-md-ported-from-flat-to-tree-format]] — Observation: pi-task-manager TODO.md ported from flat to tree format *(created: 2026-08-15)*
+- [[sources/obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s]] — Observation: pi tool execute: sync return works at runtime but fails tsc strict *(created: 2026-08-15)*
+- [[sources/obs-2026-08-15-pi-tui-labels-local-path-extensions-by-shortest-unique-path-]] — Observation: pi TUI labels local-path extensions by shortest unique path suffix *(created: 2026-08-15)*
+- [[sources/obs-2026-08-15-session-start-hook-added-to-pi-task-manager]] — Observation: session_start hook added to pi-task-manager *(created: 2026-08-15)*
 - [[sources/SRC-2026-08-14-001]] — task_manager.py *(created: unknown)*
 - [[sources/SRC-2026-08-14-002]] — task_manager_design.md *(created: unknown)*
 - [[sources/SRC-2026-08-14-003]] — tasks_emojis_format.md *(created: unknown)*
@@ -42,4 +48,4 @@
 - [[sources/wiki-initialization-complete]] — pi-task-manager wiki initialized and populated *(created: 2026-08-14)*
 
 ---
-*Last updated: 2026-08-15T10:10:40.882Z* | *Total pages: 30*
+*Last updated: 2026-08-15T18:05:17.129Z* | *Total pages: 36*

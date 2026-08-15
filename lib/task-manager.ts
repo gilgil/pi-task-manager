@@ -29,6 +29,9 @@ export type Result = Record<string, unknown>;
 /** null/undefined tool args mean "not provided" (matches Python args.get). */
 const provided = (v: unknown): boolean => v !== undefined && v !== null;
 
+/** Dates must be YYYY-MM-DD to round-trip through the parser. */
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 export class TaskManager {
 	private roots: Task[] = [];
 	private taskMap = new Map<string, Task>();
@@ -297,6 +300,31 @@ export class TaskManager {
 
 		const desc = description.trim();
 
+		if (desc.includes("\n") || desc.includes("\r"))
+			return {
+				status: "error",
+				error: "Description cannot contain newlines.",
+			};
+
+		for (const [label, value] of [
+			["scheduled", scheduled],
+			["start", start],
+			["due", due],
+		] as const) {
+			if (value !== undefined && value !== null && !DATE_RE.test(value))
+				return {
+					status: "error",
+					error: `Invalid ${label} date: ${value}. Use YYYY-MM-DD.`,
+				};
+		}
+
+		let prio: string | null = null;
+		if (priority && priority !== "normal" && priority !== "null") {
+			if (!(priority in PRIORITY_EMOJI))
+				return { status: "error", error: `Invalid priority: ${priority}` };
+			prio = priority;
+		}
+
 		if (dependsOn) {
 			for (const depId of dependsOn) {
 				if (!this.taskMap.has(depId))
@@ -323,7 +351,7 @@ export class TaskManager {
 		task.parent = parent;
 		task.dateCreated = today;
 		task.dateModified = today;
-		task.priority = priority && priority !== "normal" ? priority : null;
+		task.priority = prio;
 		task.dateScheduled = scheduled ?? null;
 		task.dateStart = start ?? null;
 		task.dateDue = due ?? null;
@@ -395,6 +423,8 @@ export class TaskManager {
 			const d = changes.description as string;
 			if (!d.trim())
 				return { status: "error", error: "Description cannot be empty." };
+			if (d.includes("\n") || d.includes("\r"))
+				return { status: "error", error: "Description cannot contain newlines." };
 			task.description = d.trim();
 		}
 
@@ -418,9 +448,19 @@ export class TaskManager {
 			else return { status: "error", error: `Invalid priority: ${p}` };
 		}
 
-		if ("scheduled" in changes) task.dateScheduled = changes.scheduled as string;
-		if ("start" in changes) task.dateStart = changes.start as string;
-		if ("due" in changes) task.dateDue = changes.due as string;
+		for (const key of ["scheduled", "start", "due"] as const) {
+			if (key in changes) {
+				const v = changes[key] as string;
+				if (!DATE_RE.test(v))
+					return {
+						status: "error",
+						error: `Invalid ${key} date: ${v}. Use YYYY-MM-DD.`,
+					};
+				if (key === "scheduled") task.dateScheduled = v;
+				else if (key === "start") task.dateStart = v;
+				else task.dateDue = v;
+			}
+		}
 		if ("recurrence" in changes) task.recurrence = changes.recurrence as string;
 
 		if ("on_completion" in changes) {
