@@ -98,3 +98,6 @@
 ## [2026-08-15T18:56:52.975Z] observe
 - slug: "obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped", title: "Annotation emoji reserved: descriptions rejected, not escaped", relevance: "high"
 
+## [2026-08-15T19:45:49.148Z] observe
+- slug: "obs-2026-08-15-pi-skill-discovery-manifest-shadows-skills-dir-frontmatter-r", title: "pi skill discovery: manifest shadows skills/ dir; frontmatter required", relevance: "high"
+

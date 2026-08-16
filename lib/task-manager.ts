@@ -20,6 +20,7 @@ import {
 	PRIORITY_EMOJI,
 	STATUS_CHARS,
 	findAnnotationEmoji,
+	findOrphanLines,
 	parseTodoFile,
 	tasksToMarkdown,
 } from "./parser.ts";
@@ -269,6 +270,15 @@ export class TaskManager {
 				error: `Cannot open ${todoPath}: ${(e as Error).message}`,
 			};
 		}
+
+		const orphans = findOrphanLines(content);
+		if (orphans.length > 0)
+			return {
+				status: "error",
+				error: `TODO.md has ${orphans.length} orphaned indented line(s) with no ancestor at the expected level: ${orphans
+					.map((o) => `line ${o.line} (${o.id})`)
+					.join(", ")}. Fix the indentation.`,
+			};
 
 		this.path = todoPath;
 		this.roots = parseTodoFile(content);

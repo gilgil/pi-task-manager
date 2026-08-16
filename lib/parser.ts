@@ -245,6 +245,38 @@ export function parseTodoFile(content: string): Task[] {
 	return roots;
 }
 
+export type OrphanLine = { line: number; id: string; depth: number };
+
+/**
+ * Find task lines whose indentation has no ancestor at the expected level
+ * (e.g. a manual edit deleted an intermediate line). A line at depth d is
+ * orphaned when no task at depth d-1 has been seen since the last shallower
+ * line. Returns 1-based line numbers and task IDs for each orphan.
+ */
+export function findOrphanLines(content: string): OrphanLine[] {
+	const orphans: OrphanLine[] = [];
+	const stack: (Task | null)[] = [];
+
+	content.split("\n").forEach((line, i) => {
+		const stripped = line.trim();
+		if (!stripped || stripped.startsWith("#") || !stripped.startsWith("-"))
+			return;
+		const match = line.match(/^( *)-\s+\[/);
+		if (!match) return;
+		const depth = Math.floor(match[1].length / 2);
+		if (depth > MAX_DEPTH) return;
+		const task = parseTaskLine(line);
+		if (!task) return;
+		if (depth > 0 && !stack[depth - 1]) {
+			orphans.push({ line: i + 1, id: task.id, depth });
+		}
+		stack[depth] = task;
+		stack.length = depth + 1;
+	});
+
+	return orphans;
+}
+
 /** Serialize a task back to a markdown line (conventional annotation order). */
 export function buildTaskLine(task: Task, depth: number = 0): string {
 	const indent = "  ".repeat(depth);

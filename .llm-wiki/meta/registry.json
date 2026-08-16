@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-08-15T18:56:53.001Z",
+  "last_updated": "2026-08-15T19:45:49.179Z",
   "pages": {
     "concepts/dataclass-porting": {
       "type": "concept",
@@ -221,6 +221,23 @@
       "relevance": "high",
       "observed_at": "2026-08-15T18:56:52.961Z",
       "source_context": "Fixing code-review bugs in pi-task-manager (round-trip data loss + API robustness)",
+      "created": "2026-08-15",
+      "updated": "2026-08-15"
+    },
+    "sources/obs-2026-08-15-pi-skill-discovery-manifest-shadows-skills-dir-frontmatter-r": {
+      "type": "source",
+      "title": "Observation: pi skill discovery: manifest shadows skills/ dir; frontmatter required",
+      "tags": [
+        "pi",
+        "extension",
+        "skills",
+        "package-manifest"
+      ],
+      "status": "observation",
+      "slug": "obs-2026-08-15-pi-skill-discovery-manifest-shadows-skills-dir-frontmatter-r",
+      "relevance": "high",
+      "observed_at": "2026-08-15T19:45:49.134Z",
+      "source_context": "Debugging why task-manager skill was missing from pi's opening message",
       "created": "2026-08-15",
       "updated": "2026-08-15"
     },

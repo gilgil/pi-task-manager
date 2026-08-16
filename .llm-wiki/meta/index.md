@@ -31,6 +31,7 @@
 
 - [[sources/obs-2026-08-14-wiki-initialized-for-pi-task-manager-project]] — Observation: Wiki initialized for pi-task-manager project *(created: 2026-08-14)*
 - [[sources/obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped]] — Observation: Annotation emoji reserved: descriptions rejected, not escaped *(created: 2026-08-15)*
+- [[sources/obs-2026-08-15-pi-skill-discovery-manifest-shadows-skills-dir-frontmatter-r]] — Observation: pi skill discovery: manifest shadows skills/ dir; frontmatter required *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate]] — Observation: pi-task-manager code review: 19 tasks added under "Investigate & Fix" *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-pi-task-manager-flat-list-refactored-to-true-tree]] — Observation: pi-task-manager: flat list refactored to true tree *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t]] — Observation: pi-task-manager: input validation added to addTask/editTask (TDD) *(created: 2026-08-15)*
@@ -49,4 +50,4 @@
 - [[sources/wiki-initialization-complete]] — pi-task-manager wiki initialized and populated *(created: 2026-08-14)*
 
 ---
-*Last updated: 2026-08-15T18:56:53.001Z* | *Total pages: 37*
+*Last updated: 2026-08-15T19:45:49.179Z* | *Total pages: 38*

@@ -89,6 +89,54 @@ test("editTask: rejects invalid dates", () => {
 	assert.equal((tm.editTask(a, undefined, undefined, undefined, undefined, undefined, "tomorrow") as any).status, "error");
 });
 
+// ── openFile validation: orphaned indented lines ─────────────────────
+
+test("openFile: rejects orphaned indented lines (missing ancestor)", () => {
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-val-"));
+	const orphan = `# TODO
+
+- [ ] Parent (ID: \`a1b2c3\`)
+    - [ ] Orphan at depth 2 (ID: \`x1y2z3\`)
+`;
+	fs.writeFileSync(path.join(dir, "TODO.md"), orphan);
+	const tm = new TaskManager();
+	const r = tm.openFile(dir);
+	assert.equal(r.status, "error");
+	assert.match(r.error as string, /orphan/i);
+	assert.equal(tm.isOpen, false);
+});
+
+test("openFile: rejects indented line with no root at all", () => {
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-val-"));
+	const orphan = `# TODO
+
+  - [ ] Indented but no ancestor (ID: \`q1w2e3\`)
+`;
+	fs.writeFileSync(path.join(dir, "TODO.md"), orphan);
+	const tm = new TaskManager();
+	const r = tm.openFile(dir);
+	assert.equal(r.status, "error");
+	assert.match(r.error as string, /orphan/i);
+	assert.equal(tm.isOpen, false);
+});
+
+test("openFile: accepts properly nested file", () => {
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-val-"));
+	const valid = `# TODO
+
+- [ ] A (ID: \`a1b2c3\`)
+  - [ ] B (ID: \`d4e5f6\`)
+    - [ ] C (ID: \`g7h8i9\`)
+- [ ] D (ID: \`j1k2l3\`)
+`;
+	fs.writeFileSync(path.join(dir, "TODO.md"), valid);
+	const tm = new TaskManager();
+	const r = tm.openFile(dir);
+	assert.equal(r.status, "ok");
+	assert.equal((r as any).task_count, 4);
+	tm.closeFile();
+});
+
 // ── round-trip guard: valid data survives save/reopen ─────────────────
 
 test("round-trip: valid dates + priority survive save/reopen", () => {

@@ -30,3 +30,4 @@
 {"slug":"obs-2026-08-15-pi-task-manager-code-review-19-tasks-added-under-investigate","title":"pi-task-manager code review: 19 tasks added under \"Investigate & Fix\"","relevance":"high","timestamp":"2026-08-15T17:07:36.663Z","kind":"observe"}
 {"slug":"obs-2026-08-15-pi-task-manager-input-validation-added-to-addtask-edittask-t","title":"pi-task-manager: input validation added to addTask/editTask (TDD)","relevance":"high","timestamp":"2026-08-15T18:05:17.075Z","kind":"observe"}
 {"slug":"obs-2026-08-15-annotation-emoji-reserved-descriptions-rejected-not-escaped","title":"Annotation emoji reserved: descriptions rejected, not escaped","relevance":"high","timestamp":"2026-08-15T18:56:52.975Z","kind":"observe"}
+{"slug":"obs-2026-08-15-pi-skill-discovery-manifest-shadows-skills-dir-frontmatter-r","title":"pi skill discovery: manifest shadows skills/ dir; frontmatter required","relevance":"high","timestamp":"2026-08-15T19:45:49.148Z","kind":"observe"}
