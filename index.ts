@@ -77,7 +77,7 @@ export default function (pi: ExtensionAPI) {
 			label: tool.label,
 			description: tool.description,
 			parameters: tool.parameters,
-			execute: (_toolCallId, params: any) => {
+			execute: async (_toolCallId, params: any) => {
 				const result = handlers[tool.name](params ?? {});
 				return {
 					content: [{ type: "text" as const, text: format(result) }],
