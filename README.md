@@ -8,8 +8,14 @@ dependency.
 ## Install
 
 ```bash
-pi install /path/to/pi-task-manager   # or: pi install npm:@you/pi-task-manager
+pi install git:github.com/<user>/pi-task-manager
 ```
+
+Any git source works: `pi install https://github.com/<user>/pi-task-manager`,
+`pi install /local/path`, or `pi install npm:@you/pi-task-manager` once
+published to npm. Pin a tag with `@v1` (e.g.
+`pi install git:github.com/<user>/pi-task-manager@v1`); `pi update --extensions`
+reconciles the clone to the pinned ref.
 
 The extension registers the tools and the `task-manager` skill automatically.
 If a `TODO.md` exists in the working directory, it is opened automatically at
