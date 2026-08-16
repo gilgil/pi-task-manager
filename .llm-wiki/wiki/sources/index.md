@@ -20,4 +20,6 @@
 - [Observation: pi tool execute: sync return works at runtime but fails tsc strict](obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s.md)
 - [Observation: pi TUI labels local-path extensions by shortest unique path suffix](obs-2026-08-15-pi-tui-labels-local-path-extensions-by-shortest-unique-path-.md)
 - [Observation: session_start hook added to pi-task-manager](obs-2026-08-15-session-start-hook-added-to-pi-task-manager.md)
+- [Observation: Orphaned indented lines now rejected on open](obs-2026-08-16-orphaned-indented-lines-now-rejected-on-open.md)
+- [Observation: Tab indentation + duplicate IDs detected on open](obs-2026-08-16-tab-indentation-duplicate-ids-detected-on-open.md)
 - [pi-task-manager wiki initialized and populated](wiki-initialization-complete.md)

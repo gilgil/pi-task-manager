@@ -1,5 +1,10 @@
 # Wiki Update Log
 
+## 2026-08-16
+
+- **observe**: {"relevance":"high","slug":"obs-2026-08-16-tab-indentation-duplicate-ids-detected-on-open","title":"Tab indentation + duplicate IDs detected on open"}
+- **observe**: {"relevance":"high","slug":"obs-2026-08-16-orphaned-indented-lines-now-rejected-on-open","title":"Orphaned indented lines now rejected on open"}
+
 ## 2026-08-15
 
 - **observe**: {"relevance":"high","slug":"obs-2026-08-15-pi-skill-discovery-manifest-shadows-skills-dir-frontmatter-r","title":"pi skill discovery: manifest shadows skills/ dir; frontmatter required"}

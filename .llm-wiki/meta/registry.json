@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-08-15T19:45:49.179Z",
+  "last_updated": "2026-08-16T03:51:54.152Z",
   "pages": {
     "concepts/dataclass-porting": {
       "type": "concept",
@@ -374,6 +374,40 @@
       "source_context": "Implementing session_start auto-open hook in pi-task-manager",
       "created": "2026-08-15",
       "updated": "2026-08-15"
+    },
+    "sources/obs-2026-08-16-orphaned-indented-lines-now-rejected-on-open": {
+      "type": "source",
+      "title": "Observation: Orphaned indented lines now rejected on open",
+      "tags": [
+        "bugfix",
+        "parser",
+        "validation",
+        "pi-task-manager"
+      ],
+      "status": "observation",
+      "slug": "obs-2026-08-16-orphaned-indented-lines-now-rejected-on-open",
+      "relevance": "high",
+      "observed_at": "2026-08-16T03:25:34.694Z",
+      "source_context": "Fixing verified round-trip bugs in pi-task-manager",
+      "created": "2026-08-16",
+      "updated": "2026-08-16"
+    },
+    "sources/obs-2026-08-16-tab-indentation-duplicate-ids-detected-on-open": {
+      "type": "source",
+      "title": "Observation: Tab indentation + duplicate IDs detected on open",
+      "tags": [
+        "bugfix",
+        "parser",
+        "validation",
+        "pi-task-manager"
+      ],
+      "status": "observation",
+      "slug": "obs-2026-08-16-tab-indentation-duplicate-ids-detected-on-open",
+      "relevance": "high",
+      "observed_at": "2026-08-16T03:51:54.122Z",
+      "source_context": "Extending parse-phase validation in pi-task-manager",
+      "created": "2026-08-16",
+      "updated": "2026-08-16"
     },
     "sources/wiki-initialization-complete": {
       "type": "source",

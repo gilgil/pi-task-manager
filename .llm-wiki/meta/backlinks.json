@@ -112,5 +112,7 @@
   "sources/obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s": [],
   "sources/obs-2026-08-15-pi-tui-labels-local-path-extensions-by-shortest-unique-path-": [],
   "sources/obs-2026-08-15-session-start-hook-added-to-pi-task-manager": [],
+  "sources/obs-2026-08-16-orphaned-indented-lines-now-rejected-on-open": [],
+  "sources/obs-2026-08-16-tab-indentation-duplicate-ids-detected-on-open": [],
   "sources/wiki-initialization-complete": []
 }

@@ -40,6 +40,8 @@
 - [[sources/obs-2026-08-15-pi-tool-execute-sync-return-works-at-runtime-but-fails-tsc-s]] — Observation: pi tool execute: sync return works at runtime but fails tsc strict *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-pi-tui-labels-local-path-extensions-by-shortest-unique-path-]] — Observation: pi TUI labels local-path extensions by shortest unique path suffix *(created: 2026-08-15)*
 - [[sources/obs-2026-08-15-session-start-hook-added-to-pi-task-manager]] — Observation: session_start hook added to pi-task-manager *(created: 2026-08-15)*
+- [[sources/obs-2026-08-16-orphaned-indented-lines-now-rejected-on-open]] — Observation: Orphaned indented lines now rejected on open *(created: 2026-08-16)*
+- [[sources/obs-2026-08-16-tab-indentation-duplicate-ids-detected-on-open]] — Observation: Tab indentation + duplicate IDs detected on open *(created: 2026-08-16)*
 - [[sources/SRC-2026-08-14-001]] — task_manager.py *(created: unknown)*
 - [[sources/SRC-2026-08-14-002]] — task_manager_design.md *(created: unknown)*
 - [[sources/SRC-2026-08-14-003]] — tasks_emojis_format.md *(created: unknown)*
@@ -50,4 +52,4 @@
 - [[sources/wiki-initialization-complete]] — pi-task-manager wiki initialized and populated *(created: 2026-08-14)*
 
 ---
-*Last updated: 2026-08-15T19:45:49.179Z* | *Total pages: 38*
+*Last updated: 2026-08-16T03:51:54.152Z* | *Total pages: 40*
