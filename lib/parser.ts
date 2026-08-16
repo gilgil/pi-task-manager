@@ -245,36 +245,62 @@ export function parseTodoFile(content: string): Task[] {
 	return roots;
 }
 
-export type OrphanLine = { line: number; id: string; depth: number };
+/** A structural problem found while scanning TODO.md content. */
+export type TodoIssue =
+	| { kind: "orphan"; line: number; id: string; depth: number }
+	| { kind: "tab"; line: number; id: string }
+	| { kind: "duplicate"; line: number; id: string; firstLine: number };
 
 /**
- * Find task lines whose indentation has no ancestor at the expected level
- * (e.g. a manual edit deleted an intermediate line). A line at depth d is
- * orphaned when no task at depth d-1 has been seen since the last shallower
- * line. Returns 1-based line numbers and task IDs for each orphan.
+ * Task line with tab (or mixed) indentation. The parser's indent regex only
+ * matches spaces, so such a line is silently dropped; we detect it here.
  */
-export function findOrphanLines(content: string): OrphanLine[] {
-	const orphans: OrphanLine[] = [];
+const TAB_TASK_RE =
+	/^([\t ]+)-\s+\[([ x>!-])\]\s+.*\(ID:\s*`([A-Za-z0-9]{6})`\)\s*$/;
+
+/**
+ * Scan TODO.md content for structural problems the parser would silently
+ * mishandle: orphaned indented lines (no ancestor at the expected level),
+ * tab indentation (line dropped), and duplicate task IDs. Returns 1-based
+ * line numbers and task IDs for each problem.
+ */
+export function findTodoIssues(content: string): TodoIssue[] {
+	const issues: TodoIssue[] = [];
 	const stack: (Task | null)[] = [];
+	const idLines = new Map<string, number>();
 
 	content.split("\n").forEach((line, i) => {
+		const n = i + 1;
 		const stripped = line.trim();
 		if (!stripped || stripped.startsWith("#") || !stripped.startsWith("-"))
 			return;
+
+		const tabMatch = line.match(TAB_TASK_RE);
+		if (tabMatch && tabMatch[1].includes("\t")) {
+			issues.push({ kind: "tab", line: n, id: tabMatch[3] });
+			return;
+		}
+
 		const match = line.match(/^( *)-\s+\[/);
 		if (!match) return;
 		const depth = Math.floor(match[1].length / 2);
 		if (depth > MAX_DEPTH) return;
 		const task = parseTaskLine(line);
 		if (!task) return;
-		if (depth > 0 && !stack[depth - 1]) {
-			orphans.push({ line: i + 1, id: task.id, depth });
-		}
+
+		if (depth > 0 && !stack[depth - 1])
+			issues.push({ kind: "orphan", line: n, id: task.id, depth });
+
+		const first = idLines.get(task.id);
+		if (first !== undefined)
+			issues.push({ kind: "duplicate", line: n, id: task.id, firstLine: first });
+		else idLines.set(task.id, n);
+
 		stack[depth] = task;
 		stack.length = depth + 1;
 	});
 
-	return orphans;
+	return issues;
 }
 
 /** Serialize a task back to a markdown line (conventional annotation order). */

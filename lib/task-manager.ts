@@ -20,9 +20,10 @@ import {
 	PRIORITY_EMOJI,
 	STATUS_CHARS,
 	findAnnotationEmoji,
-	findOrphanLines,
+	findTodoIssues,
 	parseTodoFile,
 	tasksToMarkdown,
+	type TodoIssue,
 } from "./parser.ts";
 import { depthOf, newTask, type Task } from "./task.ts";
 
@@ -33,6 +34,18 @@ const provided = (v: unknown): boolean => v !== undefined && v !== null;
 
 /** Dates must be YYYY-MM-DD to round-trip through the parser. */
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Human-readable description of a structural problem found in TODO.md. */
+function describeIssue(issue: TodoIssue): string {
+	switch (issue.kind) {
+		case "orphan":
+			return `orphan line ${issue.line} (${issue.id}) — no ancestor at its indent level`;
+		case "tab":
+			return `tab indentation on line ${issue.line} (${issue.id})`;
+		case "duplicate":
+			return `duplicate ID ${issue.id} (lines ${issue.firstLine}, ${issue.line})`;
+	}
+}
 
 export class TaskManager {
 	private roots: Task[] = [];
@@ -271,13 +284,13 @@ export class TaskManager {
 			};
 		}
 
-		const orphans = findOrphanLines(content);
-		if (orphans.length > 0)
+		const issues = findTodoIssues(content);
+		if (issues.length > 0)
 			return {
 				status: "error",
-				error: `TODO.md has ${orphans.length} orphaned indented line(s) with no ancestor at the expected level: ${orphans
-					.map((o) => `line ${o.line} (${o.id})`)
-					.join(", ")}. Fix the indentation.`,
+				error: `TODO.md has structural problems: ${issues
+					.map(describeIssue)
+					.join(", ")}. Fix the file and reopen.`,
 			};
 
 		this.path = todoPath;

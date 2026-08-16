@@ -120,6 +120,36 @@ test("openFile: rejects indented line with no root at all", () => {
 	assert.equal(tm.isOpen, false);
 });
 
+test("openFile: rejects tab indentation", () => {
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-val-"));
+	const tabbed = `# TODO
+
+- [ ] Root (ID: \`a1b2c3\`)
+\t- [ ] Tab child (ID: \`x1y2z3\`)
+`;
+	fs.writeFileSync(path.join(dir, "TODO.md"), tabbed);
+	const tm = new TaskManager();
+	const r = tm.openFile(dir);
+	assert.equal(r.status, "error");
+	assert.match(r.error as string, /tab/i);
+	assert.equal(tm.isOpen, false);
+});
+
+test("openFile: rejects duplicate task IDs", () => {
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-val-"));
+	const dups = `# TODO
+
+- [ ] A (ID: \`a1b2c3\`)
+- [ ] B (ID: \`a1b2c3\`)
+`;
+	fs.writeFileSync(path.join(dir, "TODO.md"), dups);
+	const tm = new TaskManager();
+	const r = tm.openFile(dir);
+	assert.equal(r.status, "error");
+	assert.match(r.error as string, /duplicate/i);
+	assert.equal(tm.isOpen, false);
+});
+
 test("openFile: accepts properly nested file", () => {
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tm-val-"));
 	const valid = `# TODO
