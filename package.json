@@ -1,28 +1,49 @@
 {
-	"name": "pi-task-manager",
-	"version": "0.1.0",
-	"description": "Task/todo management extension for pi",
-	"keywords": ["pi-package"],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/gilgil/pi-task-manager.git"
-	},
-	"type": "module",
-	"pi": {
-		"extensions": ["./index.ts"],
-		"skills": ["./skills"]
-	},
-	"scripts": {
-		"test": "node --test tests/*.test.ts",
-		"typecheck": "tsc --noEmit"
-	},
-	"peerDependencies": {
-		"@earendil-works/pi-ai": "*",
-		"@earendil-works/pi-coding-agent": "*",
-		"typebox": "*"
-	},
-	"devDependencies": {
-		"@types/node": "^22",
-		"typescript": "^5"
-	}
+  "name": "pi-task-manager",
+  "version": "0.1.0",
+  "description": "Hierarchical task/todo management extension for Pi. Tasks live in a TODO.md file as an indented tree.",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "extension",
+    "task",
+    "todo",
+    "task-manager",
+    "hierarchical"
+  ],
+  "author": "Gil <gil.assayag@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gilgil/pi-task-manager.git"
+  },
+  "homepage": "https://github.com/gilgil/pi-task-manager#readme",
+  "bugs": {
+    "url": "https://github.com/gilgil/pi-task-manager/issues"
+  },
+  "type": "module",
+  "files": [
+    "index.ts",
+    "lib",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "extensions": ["./index.ts"],
+    "skills": ["./skills"]
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "^5"
+  }
 }
