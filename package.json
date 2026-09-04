@@ -1,6 +1,6 @@
 {
   "name": "pi-task-manager",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Hierarchical task/todo management extension for Pi. Tasks live in a TODO.md file as an indented tree.",
   "keywords": [
     "pi-package",
@@ -26,6 +26,7 @@
     "index.ts",
     "lib",
     "skills",
+    "docs",
     "README.md",
     "LICENSE"
   ],

@@ -26,9 +26,12 @@ what lands on disk (auto-saved, `examples/party/TODO.md`):
 - [ ] Water the plants 🔁 weekly ➕ 2026-08-25 (ID: `Wp5jTn`)
 ```
 
+…same file in your terminal:
+
+![TODO.md in Ghostty](docs/screenshot.png)
+
 The `📎` task has a real note file beside it — `examples/party/task-Bq9xLc.md`,
 also in the repo.
-```
 
 ## Install
 
@@ -39,7 +42,7 @@ pi install npm:pi-task-manager
 Any git source works too: `pi install git:github.com/gilgil/pi-task-manager`,
 `pi install https://github.com/gilgil/pi-task-manager`, or
 `pi install /local/path`. Pin a tag for stability:
-`pi install git:github.com/gilgil/pi-task-manager@v0.1.2`;
+`pi install git:github.com/gilgil/pi-task-manager@v0.1.3`;
 `pi update --extensions` reconciles the clone to the pinned ref.
 
 The extension registers the tools and the `task-manager` skill automatically.
