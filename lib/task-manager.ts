@@ -29,7 +29,7 @@ import { depthOf, newTask, type Task } from "./task.ts";
 
 export type Result = Record<string, unknown>;
 
-/** null/undefined tool args mean "not provided" (matches Python args.get). */
+/** null/undefined tool args mean "not provided". */
 const provided = (v: unknown): boolean => v !== undefined && v !== null;
 
 /** Dates must be YYYY-MM-DD to round-trip through the parser. */

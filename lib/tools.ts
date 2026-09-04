@@ -1,6 +1,6 @@
 /**
  * Tool schemas for the task manager (8 tools).
- * Parameter names are snake_case to match the Python tool contract.
+ * Parameter names are snake_case.
  */
 
 import { StringEnum } from "@earendil-works/pi-ai";
