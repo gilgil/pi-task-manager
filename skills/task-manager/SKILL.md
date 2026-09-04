@@ -42,6 +42,27 @@ Example: add "Organic" under task `5Tvc0d`:
 - `depends_on`: list of task IDs (circular dependencies are rejected)
 - `spec: true` on add — also create a `task-<id>.md` spec file
 
+## Task Notes (Spec Files)
+
+Tasks can have a **note file** (`task-<id>.md`) for detailed findings, audit
+results, design decisions, or any content that doesn't fit in the one-line
+description. The note is a markdown file in the same directory as `TODO.md`.
+
+**When to use notes:**
+- Audit results ("checked X, found Y, recommend Z")
+- Design decisions and rationale
+- Research findings that inform the task
+- Anything >1 sentence that explains *why* or *what was found*
+
+**How to create/update:**
+- `task_add(..., spec: true)` — creates the note file on add
+- Write to `task-<id>.md` directly with the `write` tool
+- `task_edit(task_id, ...)` does NOT update the note file — edit the `.md` file directly
+
+**Best practice:** Keep the task description short (one line, the action).
+Put the details in the note file. This keeps the TODO.md tree readable while
+preserving the full context.
+
 ## Tips
 
 - Always `task_open` first; `task_list` before adding to find `parent_id`s.

@@ -56,7 +56,10 @@ const TaskAddParams = Type.Object({
 		}),
 	),
 	spec: Type.Optional(
-		Type.Boolean({ description: "Also create a task-<id>.md spec file" }),
+		Type.Boolean({
+			description:
+				"Create a task-<id>.md note file for detailed findings (audits, decisions, research). Keep the task description short; put details in the note.",
+		}),
 	),
 });
 
@@ -133,14 +136,14 @@ export const TOOLS: ToolDef[] = [
 		name: "task_add",
 		label: "Task Add",
 		description:
-			"Add a task. Hierarchy: parent_id (last child), before_id/after_id (sibling placement). Returns the new 6-char task ID.",
+			"Add a task. Hierarchy: parent_id (last child), before_id/after_id (sibling placement). Returns the new 6-char task ID. Use spec:true to create a note file (task-<id>.md) for detailed findings.",
 		parameters: TaskAddParams,
 	},
 	{
 		name: "task_edit",
 		label: "Task Edit",
 		description:
-			"Edit fields of an existing task. Only provided fields change. Status 'x' stamps date_done, '-' stamps date_cancelled.",
+			"Edit fields of an existing task. Only provided fields change. Status 'x' stamps date_done, '-' stamps date_cancelled. Note files (task-<id>.md) are NOT managed here — edit them directly with the write tool.",
 		parameters: TaskEditParams,
 	},
 	{
