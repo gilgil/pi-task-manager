@@ -1,20 +1,41 @@
 # pi-task-manager
 
-A pi extension for hierarchical task management. Tasks live in a `TODO.md`
-file as an indented tree; the extension exposes 8 `task_*` tools backed by a
-pure-TypeScript port of the Python task manager — no subprocess, no Python
-dependency.
+A task tree your pi agent grows, in a `TODO.md` file you can still read.
+
+Your pi agent plans and tracks work as a hierarchical tree of tasks, persisted
+in plain `TODO.md` in your project directory. The file auto-opens at session
+start, so the agent picks up where it left off — and since it's markdown, you
+can grep it, read it, or hand-edit it yourself. No server, no database, no
+subprocess: 8 `task_*` tools over pure TypeScript.
+
+## In action
+
+```text
+you:  "keep track of Sophie's birthday party — the venue is booked,
+      order the cake by the 12th, invites go out next week"
+pi:   created the party task and three subtasks
+```
+
+what lands on disk (auto-saved):
+
+```markdown
+- [ ] Plan Sophie's birthday party ⏫ (ID: `Kp7dQ2`)
+  - [x] Book venue ✅ 2026-08-30 (ID: `Tm3wZ8`)
+  - [>] Order cake 📅 2026-09-12 (ID: `H4nRv6`)
+  - [ ] Send invites ⏳ 2026-09-08 📎 [spec](task-Bq9xLc.md) (ID: `Bq9xLc`)
+- [ ] Water the plants 🔁 weekly (ID: `Wp5jTn`)
+```
 
 ## Install
 
 ```bash
-pi install git:github.com/gilgil/pi-task-manager
+pi install npm:pi-task-manager
 ```
 
-Any git source works: `pi install https://github.com/gilgil/pi-task-manager`,
-`pi install /local/path`, or `pi install npm:pi-task-manager` once
-published to npm. Pin a tag for stability:
-`pi install git:github.com/gilgil/pi-task-manager@v0.1.0`;
+Any git source works too: `pi install git:github.com/gilgil/pi-task-manager`,
+`pi install https://github.com/gilgil/pi-task-manager`, or
+`pi install /local/path`. Pin a tag for stability:
+`pi install git:github.com/gilgil/pi-task-manager@v0.1.2`;
 `pi update --extensions` reconciles the clone to the pinned ref.
 
 The extension registers the tools and the `task-manager` skill automatically.
@@ -29,16 +50,17 @@ session start (with a notification).
 - [ ] Buy milk ➕ 2026-08-15 🖊️ 2026-08-15 (ID: `5Tvc0d`)
   - [ ] Organic 📅 2026-08-20 (ID: `VpLDzY`)
   - [x] Oat milk ✅ 2026-08-14 (ID: `Ab3x9Z`)
-- [> ] Write report ⏳ 2026-08-16 (ID: `Qw7m2K`)
+- [>] Write report ⏳ 2026-08-16 (ID: `Qw7m2K`)
 ```
 
 - **Indentation** (2 spaces) defines the tree — each task's children are the
   indented lines beneath it.
-- **Status** in the checkbox: ` ` open · `x` done · `>` in-progress ·
-  `!` failed · `-` cancelled
+- **Status** — exactly one character in the checkbox: `[ ]` open ·
+  `[x]` done · `[>]` in-progress · `[!]` failed · `[-]` cancelled
 - **Emoji annotations** between description and ID:
   `⏳` scheduled · `🛫` start · `📅` due · `✅` done · `❌` cancelled ·
-  `➕` created · `🖊️` modified
+  `➕` created · `🖊️` modified · priorities `⏬` `🔽` `🔼` `⏫` `🔺` ·
+  `🔁` recurrence · `⛔` dependencies · `📎 [spec](task-<id>.md)` note file
 - **ID**: 6-char base62, stable, referenced by `parent_id`, `depends_on`, etc.
 - `depth`, `position`, and `parent_id` are always derived from the tree —
   never stored.
