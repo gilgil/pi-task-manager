@@ -1,71 +1,52 @@
 ---
 name: task-manager
-description: Manage tasks in a TODO.md tree using the task_* tools (task_open, task_add, task_edit, task_move, task_list, task_get, task_save, task_close). Use when tracking TODOs or tasks in a pi session.
+description: Manage tasks in a TODO.md tree with the task_* tools. Use when the user asks to track, plan, organize, or close TODOs and tasks in a pi session.
 ---
 
 # Task Manager
 
-Manage tasks in a `TODO.md` tree using the `task_*` tools.
+Tasks live in `TODO.md` as an indented tree. Use the `task_*` tools — never edit `TODO.md` with `write`/`edit`; the task tools preserve the prose and headings around the tasks.
 
 ## Workflow
 
-1. `task_open(path)` — open `<path>/TODO.md` (created if missing). Call once before anything else.
-2. `task_list()` — see what exists.
-3. `task_add(description, ...)` — add tasks. Returns the new 6-char ID.
-4. `task_edit(task_id, ...)` — change fields (only provided fields).
-5. `task_move(task_id, ...)` — reposition a task (with its subtree).
-6. `task_save()` / `task_close()` — save and close when done.
+1. `task_open(path)` — open `<path>/TODO.md`. The directory must already exist; only the file is created. Call once before the other tools.
+2. `task_list()` — read the tree. Every line ends with the task's `(id)`.
+3. `task_add` / `task_edit` / `task_move` — mutate; each call saves immediately.
+4. `task_close()` — close the file when finished.
 
-Mutations auto-save; `task_save` is a manual force-save.
+Take IDs from `task_list` or from the `task_id` a call returned. Never invent an ID — an unknown one is an error.
 
-## Hierarchy
-
-Tasks form a tree via indentation. Placement parameters:
+## Placement
 
 - `parent_id` — add/move as **last child** of that task
-- `before_id` / `after_id` — insert at the **same level**, before/after that
-  sibling (it must share the target's parent)
-- `task_move` with **no** destination deletes the task and its subtree
-
-Example: add "Organic" under task `5Tvc0d`:
-`task_add("Organic", parent_id: "5Tvc0d")`
+- `before_id` / `after_id` — insert at that task's **level and position**; its parent is implied. If you also pass `parent_id`, the reference must be a child of it.
+- `task_move(task_id)` with no destination — **delete** the task, its subtree, its note file, and any `depends_on` references to it
 
 ## Fields
 
-- Descriptions must be single-line and must not contain the annotation
-  emojis (⏬🔽🔼⏫🔺⏳🛫📅✅❌➕🖊️🔁🗑️🏁⛔📎🆔) — they are reserved for metadata.
-- `priority`: `lowest` `low` `normal` `medium` `high` `highest`
-- `status`: ` ` open · `x` done · `>` in-progress · `!` failed · `-` cancelled
-  (setting `x` / `-` stamps `date_done` / `date_cancelled`)
-- dates `scheduled` / `start` / `due`: `YYYY-MM-DD`
-- `recurrence`: e.g. `weekly`, `every 2 weeks on Monday`
-- `depends_on`: list of task IDs (circular dependencies are rejected)
-- `spec: true` on add — also create a `task-<id>.md` spec file
+- Descriptions are single-line and must not contain the annotation emojis (⏬🔽🔼⏫🔺⏳🛫📅✅❌➕🖊️🔁🗑️🏁⛔📎🆔) — they encode metadata.
+- `status`: ` ` open · `x` done · `>` in-progress · `!` failed · `-` cancelled. Setting `x`/`-` stamps `date_done`/`date_cancelled`; reverting clears them.
+- `priority`: `lowest` … `highest`, or `null` to clear.
+- `depends_on` replaces the whole list (`[]` clears it); circular dependencies are rejected.
+- `recurrence`: `daily` / `weekly` / `monthly` / `yearly`, or `every N days|weeks|months|years`, optionally `… on Monday`. Completing the task creates the next instance as the following sibling, with its `due` advanced (or `start`, if the task used `start` instead of `due`).
+- `on_completion`: `delete` removes the task when it is completed (skipped if it has sub-tasks); `keep` leaves it.
 
-## Task Notes (Spec Files)
+## Note files
 
-Tasks can have a **note file** (`task-<id>.md`) for detailed findings, audit
-results, design decisions, or any content that doesn't fit in the one-line
-description. The note is a markdown file in the same directory as `TODO.md`.
+`task-<id>.md` (next to `TODO.md`) holds what does not fit in one line: audit results, decisions and rationale, findings.
 
-**When to use notes:**
-- Audit results ("checked X, found Y, recommend Z")
-- Design decisions and rationale
-- Research findings that inform the task
-- Anything >1 sentence that explains *why* or *what was found*
+- `task_add(..., spec: true)` creates it; fill it with the `write` tool.
+- `task_edit` never touches it. Deleting the task deletes the note file.
+- Keep the description to one short action line; put the detail in the note.
 
-**How to create/update:**
-- `task_add(..., spec: true)` — creates the note file on add
-- Write to `task-<id>.md` directly with the `write` tool
-- `task_edit(task_id, ...)` does NOT update the note file — edit the `.md` file directly
+## Reading the tree
 
-**Best practice:** Keep the task description short (one line, the action).
-Put the details in the note file. This keeps the TODO.md tree readable while
-preserving the full context.
+`task_list` returns lines indented by depth — that is the whole tree:
 
-## Tips
+```
+53 tasks
+- [ ] Investigate & Fix (j4MXO6) (high)
+  - [x] Fixed thing (B2MUfE) due 2026-10-07
+```
 
-- Always `task_open` first; `task_list` before adding to find `parent_id`s.
-- Use `task_list(parent_id, include_subtasks: true)` to inspect a subtree.
-- `task_get(task_id)` for full details of one task.
-- IDs are stable 6-char strings — reuse them across calls in a session.
+`task_list(parent_id)` = its children (`include_subtasks: true` for the whole subtree); `task_get(id)` = one task's full fields.

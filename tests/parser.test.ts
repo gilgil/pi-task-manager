@@ -2,9 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
 	parseTaskLine,
-	parseTodoFile,
+	parseTodoDoc,
 	buildTaskLine,
-	tasksToMarkdown,
+	docToMarkdown,
 } from "../lib/parser.ts";
 import { depthOf, type Task } from "../lib/task.ts";
 
@@ -79,7 +79,7 @@ test("hierarchy: depth, parent, children", () => {
 		"- [ ] E (ID: `eeeeee`)",
 		"",
 	].join("\n");
-	const roots = parseTodoFile(content);
+	const roots = parseTodoDoc(content).roots;
 	assert.deepEqual(roots.map((t) => t.id), ["aaaaaa", "eeeeee"]);
 	const byId = Object.fromEntries(flatten(roots).map((t) => [t.id, t]));
 	assert.equal(byId["bbbbbb"].parent?.id, "aaaaaa");
@@ -99,22 +99,47 @@ test("round-trip: parse -> build -> parse is stable", () => {
 	const content = [
 		"# TODO",
 		"",
-		"- [ ] A ⏫ ⏳ 2026-09-01 📅 2026-12-01 ➕ 2026-08-14 🖊️ 2026-08-14 (ID: `aaaaaa`)",
-		"  - [>] B 🔺 🔁 monthly 🗑️ ⛔ aaaaaa ➕ 2026-08-14 🖊️ 2026-08-14 (ID: `bbbbbb`)",
+		"- [ ] A ⏫ ⏳ 2026-09-01 📅 2026-12-01 ➕ 2026-08-14 (ID: `aaaaaa`)",
+		"  - [>] B 🔺 🔁 monthly 🗑️ ⛔ aaaaaa ➕ 2026-08-14 (ID: `bbbbbb`)",
 		"",
 	].join("\n");
-	const once = parseTodoFile(content);
-	const rebuilt = tasksToMarkdown(once);
+	const once = parseTodoDoc(content);
+	const rebuilt = docToMarkdown(once);
 	assert.equal(rebuilt, content);
-	const twice = parseTodoFile(rebuilt);
+	const twice = parseTodoDoc(rebuilt);
 	assert.deepEqual(
-		flatten(twice).map((t) => t.id),
-		flatten(once).map((t) => t.id),
+		flatten(twice.roots).map((t) => t.id),
+		flatten(once.roots).map((t) => t.id),
 	);
-	assert.equal(tasksToMarkdown(twice), content);
+	assert.equal(docToMarkdown(twice), content);
 });
 
 test("buildTaskLine: no annotations", () => {
 	const t = parseTaskLine("- [ ] Plain (ID: `aaaaaa`)")!;
 	assert.equal(buildTaskLine(t), "- [ ] Plain (ID: `aaaaaa`)");
+});
+
+test("🖊️ is omitted when it equals ➕, and implied on parse", () => {
+	const content = [
+		"# TODO",
+		"",
+		"- [ ] A ➕ 2026-08-14 (ID: `aaaaaa`)",
+		"- [ ] B ➕ 2026-08-14 🖊️ 2026-10-08 (ID: `bbbbbb`)",
+		"",
+	].join("\n");
+	const doc = parseTodoDoc(content);
+	const a = flatten(doc.roots).find((t) => t.id === "aaaaaa")!;
+	const b = flatten(doc.roots).find((t) => t.id === "bbbbbb")!;
+	assert.equal(a.dateModified, "2026-08-14");
+	assert.equal(b.dateModified, "2026-10-08");
+	assert.equal(docToMarkdown(doc), content);
+});
+
+test("a redundant explicit 🖊️ is normalized away on the next write", () => {
+	const content = "# TODO\n\n- [ ] A ➕ 2026-08-14 🖊️ 2026-08-14 (ID: `aaaaaa`)\n";
+	const doc = parseTodoDoc(content);
+	assert.equal(flatten(doc.roots)[0].dateModified, "2026-08-14");
+	const rebuilt = docToMarkdown(doc);
+	assert.ok(!rebuilt.includes("🖊️"), rebuilt);
+	assert.equal(docToMarkdown(parseTodoDoc(rebuilt)), rebuilt);
 });

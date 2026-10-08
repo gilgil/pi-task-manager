@@ -3,8 +3,9 @@
  *
  * The in-memory data structure is a tree of Task nodes (roots + parent/
  * children links). Serialization is a recursive DFS; de-serialization is
- * a series of appends (see parseTodoFile). depth, position, parent_id,
- * and children_ids are always derived, never stored.
+ * a series of appends (see parseTodoDoc). depth, position, parent_id,
+ * and children_ids are always derived, never stored. Lines that are not
+ * tasks (prose, headers, ID-less tasks) are preserved verbatim.
  *
  * Every mutation auto-saves (temp file + rename, with .bak backup);
  * save() is a deterministic checkpoint.
@@ -21,19 +22,60 @@ import {
 	STATUS_CHARS,
 	findAnnotationEmoji,
 	findTodoIssues,
-	parseTodoFile,
-	tasksToMarkdown,
+	parseTodoDoc,
+	docToMarkdown,
 	type TodoIssue,
 } from "./parser.ts";
 import { depthOf, newTask, type Task } from "./task.ts";
+import { nextDate, parseRecurrence } from "./recurrence.ts";
 
 export type Result = Record<string, unknown>;
+
+/** Options for addTask (everything after the description). */
+export interface AddOpts {
+	parentId?: string | null;
+	beforeId?: string | null;
+	afterId?: string | null;
+	priority?: string | null;
+	scheduled?: string | null;
+	start?: string | null;
+	due?: string | null;
+	recurrence?: string | null;
+	onCompletion?: string | null;
+	dependsOn?: string[] | null;
+	spec?: boolean;
+}
+
+/** Options for editTask. Omitted (or null) fields are left unchanged. */
+export interface EditOpts {
+	description?: string | null;
+	status?: string | null;
+	priority?: string | null;
+	scheduled?: string | null;
+	start?: string | null;
+	due?: string | null;
+	recurrence?: string | null;
+	onCompletion?: string | null;
+	dependsOn?: string[] | null;
+}
 
 /** null/undefined tool args mean "not provided". */
 const provided = (v: unknown): boolean => v !== undefined && v !== null;
 
 /** Dates must be YYYY-MM-DD to round-trip through the parser. */
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Recurrence is free text written verbatim into the task line. */
+function recurrenceError(rec: string): string | null {
+	if (rec.includes("\n") || rec.includes("\r"))
+		return "Recurrence cannot contain newlines.";
+	const bad = findAnnotationEmoji(rec);
+	if (bad)
+		return `Recurrence contains annotation emoji ${bad}, which is reserved for task metadata.`;
+	if (rec.trim() && !parseRecurrence(rec))
+		return `Invalid recurrence rule: ${rec}. Use daily, weekly, monthly, yearly, or "every N days/weeks/months/years".`;
+	return null;
+}
 
 /** Human-readable description of a structural problem found in TODO.md. */
 function describeIssue(issue: TodoIssue): string {
@@ -49,6 +91,9 @@ function describeIssue(issue: TodoIssue): string {
 
 export class TaskManager {
 	private roots: Task[] = [];
+	private preamble: string[] = [];
+	private epilogue: string[] = [];
+	private trailingNewline = true;
 	private taskMap = new Map<string, Task>();
 	private path: string | null = null;
 	private dirty = false;
@@ -146,7 +191,12 @@ export class TaskManager {
 	private saveToDisk(): string | null {
 		if (!this.path) return null;
 		try {
-			const content = tasksToMarkdown(this.roots);
+			const content = docToMarkdown({
+				preamble: this.preamble,
+				roots: this.roots,
+				epilogue: this.epilogue,
+				trailingNewline: this.trailingNewline,
+			});
 			const dir = path.dirname(this.path);
 			const tmp = path.join(
 				dir,
@@ -241,7 +291,10 @@ export class TaskManager {
 			if (!this.taskMap.has(refId))
 				return { status: "error", error: `${label} task not found: ${refId}` };
 			ref = this.taskMap.get(refId)!;
-			if (ref.parent !== parent)
+			// A sibling reference already says which level the task belongs on:
+			// its own parent. Only an explicit parent_id can conflict with it.
+			if (!parentId) parent = ref.parent;
+			else if (ref.parent !== parent)
 				return {
 					status: "error",
 					error: `${label} must be a sibling of the new task (child of ${
@@ -294,7 +347,11 @@ export class TaskManager {
 			};
 
 		this.path = todoPath;
-		this.roots = parseTodoFile(content);
+		const doc = parseTodoDoc(content);
+		this.roots = doc.roots;
+		this.preamble = doc.preamble;
+		this.epilogue = doc.epilogue;
+		this.trailingNewline = doc.trailingNewline;
 		this.rebuildMap();
 		this.dirty = false;
 
@@ -310,9 +367,12 @@ export class TaskManager {
 					status: "error",
 					error: `Close failed, file left open (save error): ${err}`,
 				};
-			}
+		}
 		this.path = null;
 		this.roots = [];
+		this.preamble = [];
+		this.epilogue = [];
+		this.trailingNewline = true;
 		this.taskMap = new Map();
 		this.dirty = false;
 		return { status: "ok", message: "File closed." };
@@ -320,20 +380,22 @@ export class TaskManager {
 
 	addTask(
 		description: string,
-		parentId?: string | null,
-		beforeId?: string | null,
-		afterId?: string | null,
-		priority?: string | null,
-		scheduled?: string | null,
-		start?: string | null,
-		due?: string | null,
-		recurrence?: string | null,
-		onCompletion?: string | null,
-		dependsOn?: string[] | null,
-		spec = false,
+		{
+			parentId,
+			beforeId,
+			afterId,
+			priority,
+			scheduled,
+			start,
+			due,
+			recurrence,
+			onCompletion,
+			dependsOn,
+			spec,
+		}: AddOpts = {},
 	): Result {
 		if (!this.isOpen)
-			return { status: "error", error: "No file open. Call open_file first." };
+			return { status: "error", error: "No file open. Call task_open first." };
 		if (!description || !description.trim())
 			return { status: "error", error: "Description cannot be empty." };
 
@@ -362,6 +424,10 @@ export class TaskManager {
 					status: "error",
 					error: `Invalid ${label} date: ${value}. Use YYYY-MM-DD.`,
 				};
+		}
+		if (recurrence) {
+			const err = recurrenceError(recurrence);
+			if (err) return { status: "error", error: err };
 		}
 
 		let prio: string | null = null;
@@ -401,7 +467,7 @@ export class TaskManager {
 		task.dateScheduled = scheduled ?? null;
 		task.dateStart = start ?? null;
 		task.dateDue = due ?? null;
-		task.recurrence = recurrence ?? null;
+		task.recurrence = recurrence?.trim() || null;
 		task.onCompletion = onCompletion ?? null;
 		task.dependsOn = dependsOn ? [...dependsOn] : [];
 		task.hasSpec = !!spec;
@@ -430,6 +496,9 @@ export class TaskManager {
 			status: "ok",
 			task_id: task.id,
 			description: task.description,
+			parent_id: task.parent?.id ?? null,
+			depth: depthOf(task),
+			position: this.positionOf(task),
 		};
 		if (saveError) result.warning = `Task added but save failed: ${saveError}`;
 		return result;
@@ -437,15 +506,17 @@ export class TaskManager {
 
 	editTask(
 		taskId: string,
-		description?: string | null,
-		status?: string | null,
-		priority?: string | null,
-		scheduled?: string | null,
-		start?: string | null,
-		due?: string | null,
-		recurrence?: string | null,
-		onCompletion?: string | null,
-		dependsOn?: string[] | null,
+		{
+			description,
+			status,
+			priority,
+			scheduled,
+			start,
+			due,
+			recurrence,
+			onCompletion,
+			dependsOn,
+		}: EditOpts = {},
 	): Result {
 		if (!this.isOpen) return { status: "error", error: "No file open." };
 
@@ -485,6 +556,7 @@ export class TaskManager {
 			task.description = d.trim();
 		}
 
+		const wasDone = task.status === "x";
 		if ("status" in changes) {
 			const newStatus = changes.status as string;
 			if (!STATUS_CHARS.includes(newStatus))
@@ -520,7 +592,12 @@ export class TaskManager {
 				else task.dateDue = v;
 			}
 		}
-		if ("recurrence" in changes) task.recurrence = changes.recurrence as string;
+		if ("recurrence" in changes) {
+			const rec = changes.recurrence as string;
+			const err = recurrenceError(rec);
+			if (err) return { status: "error", error: err };
+			task.recurrence = rec.trim() || null;
+		}
 
 		if ("on_completion" in changes) {
 			const oc = changes.on_completion as string;
@@ -530,29 +607,38 @@ export class TaskManager {
 		}
 
 		if ("depends_on" in changes) {
+			// An empty array clears the list; explicit null means "not provided".
 			const deps = changes.depends_on as string[];
-			if (deps === null) {
-				task.dependsOn = [];
-			} else {
-				for (const depId of deps) {
-					if (!this.taskMap.has(depId))
-						return {
-							status: "error",
-							error: `Dependency task not found: ${depId}`,
-						};
-				}
-				if (this.wouldCreateCycle(taskId, deps))
+			for (const depId of deps) {
+				if (!this.taskMap.has(depId))
 					return {
 						status: "error",
-						error: "Circular dependency detected.",
+						error: `Dependency task not found: ${depId}`,
 					};
-				task.dependsOn = [...deps];
 			}
+			if (this.wouldCreateCycle(taskId, deps))
+				return {
+					status: "error",
+					error: "Circular dependency detected.",
+				};
+			task.dependsOn = [...deps];
 		}
+
+		let completion: { next?: string; deleted?: boolean; warning?: string } | null =
+			null;
+		if ("status" in changes && task.status === "x" && !wasDone)
+			completion = this.onCompleted(task);
 
 		task.dateModified = this.today();
 		const saveError = this.commit();
-		const result: Result = { status: "ok", task: this.taskToDict(task) };
+		const result: Result = { status: "ok" };
+		if (completion?.deleted) {
+			result.message = `Task ${taskId} completed, then deleted (on_completion: delete).`;
+		} else {
+			result.task = this.taskToDict(task);
+		}
+		if (completion?.next) result.next_task_id = completion.next;
+		if (completion?.warning) result.warning = completion.warning;
 		if (saveError)
 			result.warning = `Task updated but save failed: ${saveError}`;
 		return result;
@@ -632,6 +718,7 @@ export class TaskManager {
 			task_id: taskId,
 			parent_id: task.parent?.id ?? null,
 			depth: depthOf(task),
+			position: this.positionOf(task),
 		};
 		if (saveError) result.warning = `Task moved but save failed: ${saveError}`;
 		return result;
@@ -646,6 +733,8 @@ export class TaskManager {
 		}
 	}
 
+	/** With parent_id: direct children only, or the whole subtree (including
+	 *  the parent itself) when includeSubtasks. Without: every task. */
 	listTasks(
 		parentId?: string | null,
 		status?: string | null,
@@ -655,21 +744,25 @@ export class TaskManager {
 		if (!this.isOpen) return { status: "error", error: "No file open." };
 
 		let start: Task[] = this.roots;
+		let recurse = true;
 		if (parentId) {
 			const parent = this.taskMap.get(parentId);
-			if (!parent) return { status: "ok", tasks: [], count: 0 };
+			if (!parent)
+				return { status: "error", error: `Task not found: ${parentId}` };
 			start = includeSubtasks ? [parent] : parent.children;
+			recurse = includeSubtasks;
 		}
 
 		const results: Record<string, unknown>[] = [];
 		const visit = (tasks: Task[]): void => {
 			for (const task of tasks) {
-				if (
-					(!status || task.status === status) &&
-					(!priority || task.priority === priority)
-				)
+				// "null" is the enum's way of asking for tasks with no priority.
+				const prioOk =
+					!priority ||
+					(priority === "null" ? task.priority === null : task.priority === priority);
+				if ((!status || task.status === status) && prioOk)
 					results.push(this.taskSummary(task));
-				visit(task.children);
+				if (recurse) visit(task.children);
 			}
 		};
 		visit(start);
@@ -691,6 +784,79 @@ export class TaskManager {
 
 	// ─── move/delete helpers ───────────────────────────────────────────
 
+	/**
+	 * What completing a task does: a recurrence rule spawns the next instance as
+	 * the following sibling, and `on_completion: delete` removes the finished
+	 * one. Does not commit — the caller saves once.
+	 */
+	private onCompleted(
+		task: Task,
+	): { next?: string; deleted?: boolean; warning?: string } {
+		const out: { next?: string; deleted?: boolean; warning?: string } = {};
+		const rule = task.recurrence ? parseRecurrence(task.recurrence) : null;
+
+		if (rule) {
+			const base = task.dateDue ?? task.dateScheduled ?? this.today();
+			const next = newTask(this.generateId(), task.description);
+			next.parent = task.parent;
+			const siblings = task.parent ? task.parent.children : this.roots;
+			siblings.splice(siblings.indexOf(task) + 1, 0, next);
+			next.dateCreated = this.today();
+			next.dateModified = this.today();
+			next.priority = task.priority;
+			next.recurrence = task.recurrence;
+			next.onCompletion = task.onCompletion;
+			next.dependsOn = [...task.dependsOn];
+			const due = nextDate(base, rule);
+			if (task.dateScheduled && !task.dateDue) next.dateScheduled = due;
+			else next.dateDue = due;
+			out.next = next.id;
+		}
+
+		if (task.onCompletion === "delete") {
+			if (task.children.length)
+				out.warning =
+					"on_completion: delete skipped — the task has sub-tasks.";
+			else {
+				this.purge(task);
+				out.deleted = true;
+			}
+		}
+		return out;
+	}
+
+	/** Detach a task (its subtree goes with it) and clean up everything that
+	 *  referenced it: depends_on entries and note files. Does not commit. */
+	private purge(task: Task): { subCount: number; pruned: number; specs: number } {
+		const descendants = this.getDescendants(task);
+		const siblings = task.parent ? task.parent.children : this.roots;
+		siblings.splice(siblings.indexOf(task), 1);
+
+		const gone = new Set<string>([task.id, ...descendants.map((t) => t.id)]);
+		this.rebuildMap();
+
+		let pruned = 0;
+		for (const t of this.taskMap.values()) {
+			const kept = t.dependsOn.filter((id) => !gone.has(id));
+			if (kept.length !== t.dependsOn.length) {
+				t.dependsOn = kept;
+				pruned++;
+			}
+		}
+
+		let specs = 0;
+		if (this.path) {
+			for (const t of [task, ...descendants]) {
+				if (!t.hasSpec) continue;
+				try {
+					fs.unlinkSync(path.join(path.dirname(this.path), `task-${t.id}.md`));
+					specs++;
+				} catch {}
+			}
+		}
+		return { subCount: descendants.length, pruned, specs };
+	}
+
 	private deleteTask(taskId: string): Result {
 		let task: Task;
 		try {
@@ -699,15 +865,15 @@ export class TaskManager {
 			return { status: "error", error: (e as Error).message };
 		}
 
-		const subCount = this.getDescendants(task).length;
-		const siblings = task.parent ? task.parent.children : this.roots;
-		siblings.splice(siblings.indexOf(task), 1);
+		const { subCount, pruned, specs } = this.purge(task);
 
 		const saveError = this.commit();
 		const result: Result = {
 			status: "ok",
 			message: `Deleted task ${taskId} and ${subCount} sub-task(s).`,
 		};
+		if (pruned) result.pruned_dependencies = pruned;
+		if (specs) result.removed_spec_files = specs;
 		if (saveError) result.warning = `Task deleted but save failed: ${saveError}`;
 		return result;
 	}

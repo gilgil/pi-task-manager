@@ -1,4 +1,4 @@
 node_modules/
 *.bak
-TODO.md
+/TODO.md
 .llm-wiki/

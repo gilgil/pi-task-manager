@@ -25,44 +25,35 @@ test("addTask: rejects multiline description", () => {
 
 test("addTask: rejects invalid scheduled date", () => {
 	const { tm } = setup();
-	const r = tm.addTask("A", undefined, undefined, undefined, undefined, "tomorrow");
+	const r = tm.addTask("A", { scheduled: "tomorrow" });
 	assert.equal(r.status, "error");
 	assert.match(r.error as string, /scheduled/i);
 });
 
 test("addTask: rejects invalid start date", () => {
 	const { tm } = setup();
-	const r = tm.addTask("A", undefined, undefined, undefined, undefined, undefined, "2026-1-1");
+	const r = tm.addTask("A", { start: "2026-1-1" });
 	assert.equal(r.status, "error");
 	assert.match(r.error as string, /start/i);
 });
 
 test("addTask: rejects invalid due date", () => {
 	const { tm } = setup();
-	const r = tm.addTask("A", undefined, undefined, undefined, undefined, undefined, undefined, "15/08/2026");
+	const r = tm.addTask("A", { due: "15/08/2026" });
 	assert.equal(r.status, "error");
 	assert.match(r.error as string, /due/i);
 });
 
 test("addTask: rejects invalid priority", () => {
 	const { tm } = setup();
-	const r = tm.addTask("A", undefined, undefined, undefined, "urgent");
+	const r = tm.addTask("A", { priority: "urgent" });
 	assert.equal(r.status, "error");
 	assert.match(r.error as string, /priority/i);
 });
 
 test("addTask: accepts valid dates and priority", () => {
 	const { tm } = setup();
-	const r = tm.addTask(
-		"A",
-		undefined,
-		undefined,
-		undefined,
-		"high",
-		"2026-09-01",
-		"2026-09-02",
-		"2026-09-03",
-	);
+	const r = tm.addTask("A", { priority: "high", scheduled: "2026-09-01", start: "2026-09-02", due: "2026-09-03" });
 	assert.equal(r.status, "ok");
 	const t = tm.getTask(id(r)) as any;
 	assert.equal(t.task.priority, "high");
@@ -76,7 +67,7 @@ test("addTask: accepts valid dates and priority", () => {
 test("editTask: rejects multiline description", () => {
 	const { tm } = setup();
 	const a = id(tm.addTask("A"));
-	const r = tm.editTask(a, "line1\nline2");
+	const r = tm.editTask(a, { description: "line1\nline2" });
 	assert.equal(r.status, "error");
 	assert.match(r.error as string, /newline/i);
 });
@@ -84,9 +75,9 @@ test("editTask: rejects multiline description", () => {
 test("editTask: rejects invalid dates", () => {
 	const { tm } = setup();
 	const a = id(tm.addTask("A"));
-	assert.equal((tm.editTask(a, undefined, undefined, undefined, "tomorrow") as any).status, "error");
-	assert.equal((tm.editTask(a, undefined, undefined, undefined, undefined, "tomorrow") as any).status, "error");
-	assert.equal((tm.editTask(a, undefined, undefined, undefined, undefined, undefined, "tomorrow") as any).status, "error");
+	assert.equal((tm.editTask(a, { scheduled: "tomorrow" }) as any).status, "error");
+	assert.equal((tm.editTask(a, { start: "tomorrow" }) as any).status, "error");
+	assert.equal((tm.editTask(a, { due: "tomorrow" }) as any).status, "error");
 });
 
 // ── openFile validation: orphaned indented lines ─────────────────────
@@ -172,16 +163,7 @@ test("openFile: accepts properly nested file", () => {
 test("round-trip: valid dates + priority survive save/reopen", () => {
 	const { tm, dir } = setup();
 	const a = id(
-		tm.addTask(
-			"A",
-			undefined,
-			undefined,
-			undefined,
-			"high",
-			"2026-09-01",
-			"2026-09-02",
-			"2026-09-03",
-		),
+		tm.addTask("A", { priority: "high", scheduled: "2026-09-01", start: "2026-09-02", due: "2026-09-03" }),
 	);
 	tm.closeFile();
 	const tm2 = new TaskManager();

@@ -23,6 +23,8 @@ export interface Task {
 	onCompletion: string | null;
 	dependsOn: string[];
 	hasSpec: boolean;
+	/** Non-task lines that followed this task in the file, kept verbatim. */
+	extraLines: string[];
 	parent: Task | null;
 	children: Task[];
 }
@@ -44,6 +46,7 @@ export function newTask(id: string, description: string): Task {
 		onCompletion: null,
 		dependsOn: [],
 		hasSpec: false,
+		extraLines: [],
 		parent: null,
 		children: [],
 	};

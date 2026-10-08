@@ -160,6 +160,11 @@ export function parseAnnotations(text: string): [Annotations, string] {
 		}
 	}
 
+	// A task that was never edited carries no 🖊️: it was last modified when it
+	// was opened.
+	if (!annotations.modified && annotations.created)
+		annotations.modified = annotations.created;
+
 	// Priority emojis
 	for (const [emoji, priority] of Object.entries(PRIORITY_FROM_EMOJI)) {
 		if (remaining.includes(emoji)) {
@@ -213,36 +218,64 @@ export function parseTaskLine(line: string): Task | null {
 }
 
 /**
- * Parse entire TODO.md content into a tree of tasks (returns the roots).
+ * A parsed TODO.md: the task tree, plus every line the parser cannot
+ * represent as a task, kept verbatim so hand-written content survives a save.
+ *
+ * - preamble: lines before the first task line
+ * - Task.extraLines: non-task lines between that task and the next task line
+ *   (includes task-looking lines we refuse to parse: no ID, depth > MAX_DEPTH)
+ * - epilogue: lines after the last task line
+ *
+ * Task lines occur in the file in DFS order, so re-emitting
+ * [task, its extraLines, its children] reproduces the file exactly.
+ */
+export interface TodoDoc {
+	preamble: string[];
+	roots: Task[];
+	epilogue: string[];
+	/** Whether the file ended with a newline (split's phantom last element). */
+	trailingNewline: boolean;
+}
+
+/**
+ * Parse entire TODO.md content into a task tree (plus preserved raw lines).
  * Hierarchy comes from indentation: each task is appended as a child of
  * the most recent task at one shallower depth.
  */
-export function parseTodoFile(content: string): Task[] {
+export function parseTodoDoc(content: string): TodoDoc {
+	const trailingNewline = content.length > 0 && content.endsWith("\n");
+	const allLines = trailingNewline
+		? content.slice(0, -1).split("\n")
+		: content.split("\n");
+	const preamble: string[] = [];
 	const roots: Task[] = [];
 	const stack: (Task | null)[] = []; // stack[d] = most recent task at depth d
+	let lastTask: Task | null = null;
+	let pending: string[] = [];
 
-	for (const line of content.split("\n")) {
-		const stripped = line.trim();
-		if (!stripped || stripped.startsWith("#") || !stripped.startsWith("-"))
-			continue;
-
+	for (const line of allLines) {
 		const match = line.match(/^( *)-\s+\[/);
-		if (!match) continue;
+		const depth = match ? Math.floor(match[1].length / 2) : 0;
+		const task = match && depth <= MAX_DEPTH ? parseTaskLine(line) : null;
 
-		const depth = Math.floor(match[1].length / 2);
-		if (depth > MAX_DEPTH) continue;
+		if (!task) {
+			if (lastTask) pending.push(line);
+			else preamble.push(line);
+			continue;
+		}
 
-		const task = parseTaskLine(line);
-		if (!task) continue;
+		if (pending.length && lastTask) lastTask.extraLines = pending;
+		pending = [];
 
 		const parent = depth === 0 ? null : stack[depth - 1] ?? null;
 		task.parent = parent;
 		(parent ? parent.children : roots).push(task);
 		stack[depth] = task;
 		stack.length = depth + 1;
+		lastTask = task;
 	}
 
-	return roots;
+	return { preamble, roots, epilogue: pending, trailingNewline };
 }
 
 /** A structural problem found while scanning TODO.md content. */
@@ -322,7 +355,9 @@ export function buildTaskLine(task: Task, depth: number = 0): string {
 		annotations.push(`⛔ ${task.dependsOn.join(",")}`);
 	if (task.hasSpec) annotations.push(`📎 [spec](task-${task.id}.md)`);
 	if (task.dateCreated) annotations.push(`➕ ${task.dateCreated}`);
-	if (task.dateModified) annotations.push(`🖊️ ${task.dateModified}`);
+	// Only interesting when it differs from the opening date.
+	if (task.dateModified && task.dateModified !== task.dateCreated)
+		annotations.push(`🖊️ ${task.dateModified}`);
 
 	const annotationStr = annotations.join(" ");
 	if (annotationStr)
@@ -330,16 +365,17 @@ export function buildTaskLine(task: Task, depth: number = 0): string {
 	return `${indent}- [${task.status}] ${task.description} (ID: \`${task.id}\`)`;
 }
 
-/** Convert a task tree to TODO.md markdown content (recursive DFS). */
-export function tasksToMarkdown(roots: Task[]): string {
-	const lines: string[] = ["# TODO", ""];
+/** Convert a parsed document back to TODO.md content (recursive DFS). */
+export function docToMarkdown(doc: TodoDoc): string {
+	const lines: string[] = [...doc.preamble];
 	const walk = (tasks: Task[], depth: number): void => {
 		for (const task of tasks) {
 			lines.push(buildTaskLine(task, depth));
+			lines.push(...task.extraLines);
 			walk(task.children, depth + 1);
 		}
 	};
-	walk(roots, 0);
-	lines.push("");
-	return lines.join("\n");
+	walk(doc.roots, 0);
+	lines.push(...doc.epilogue);
+	return lines.join("\n") + (doc.trailingNewline ? "\n" : "");
 }
